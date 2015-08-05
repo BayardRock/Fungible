@@ -1,0 +1,23 @@
+type project
+owners
+    Rick Minerich
+authors 
+    Rick Minerich
+projectUrl
+    http://github.com/BayardRock/Fungible
+iconUrl
+    https://raw.githubusercontent.com/BayardRock/Fungible/master/docs/files/img/logo.png
+licenseUrl
+    http://github.com/BayardRock/Fungible/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    F# fsharp data reflection expressions
+summary
+    A library for fast reflective changes to immutable data trees
+description
+    A library for fast reflective changes to immutable data trees using F# Expression trees to reduce the number of allocations to a minimum.
+
+
