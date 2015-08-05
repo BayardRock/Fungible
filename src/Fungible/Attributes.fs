@@ -30,10 +30,7 @@ let internal getCleaningFunctionAttr (m: MethodInfo) =
 
 /// Gets all data cleaners that are marked with a CleaningFunctionTypeAttribute
 let GatherAllDataCleaners(moduleType: Type) = 
-    moduleType.GetMethods()
-        .Select(getCleaningFunctionAttr)
-        .Where(fun x -> x.IsSome)
-        .Select(fun x -> x.Value)
+    moduleType.GetMethods() |> Array.choose getCleaningFunctionAttr
         
 type BasicCleaningInputFile<'t> =
     {
