@@ -1,4 +1,4 @@
-﻿module Attributes
+﻿module Fungible.Attributes
 
 open System
 

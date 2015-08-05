@@ -1,6 +1,6 @@
 module Fungible.Tests
 
-open Fungible
+open Fungible.Core
 
 open NUnit.Framework
 
@@ -27,7 +27,7 @@ let simpleTest = { Name = "Rick"; Age = 33 }
 
 [<Test>]
 let ``record cloning should be able to clone a simple record`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<SimpleRecord> rcs Map.empty
     let res = func simpleTest
     Assert.AreEqual(simpleTest, res)
 
@@ -36,7 +36,7 @@ let ``record cloning should be able to map a simple string`` () =
     let updater (s: string) = s.ToLower()
     let map = [(["Name"], [makeMap updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleRecord> rcs map
     let res = func simpleTest
     Assert.True((res = { simpleTest with Name = "rick" }), sprintf "Failed with: %A" res)
 
@@ -46,7 +46,7 @@ let ``record cloning should be able to double map a simple string in the right o
     let addI (s: string) = s + "I"
     let map = [(["Name"], [makeMap addI; makeMap toLower])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleRecord> rcs map
     let res = func simpleTest
     Assert.True((res = { simpleTest with Name = "ricki" }), sprintf "Failed with: %A" res)
 
@@ -54,20 +54,20 @@ let ``record cloning should be able to double map a simple string in the right o
 let ``record cloning should not be able to filter a simple string`` () =
     let updater (s: string) = s = ""
     let map = [(["Name"], [makeFilter updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<SimpleRecord> rcs map |> ignore) |> ignore
 
 [<Test>]
 let ``record cloning should not be able to collect a simple string`` () =
     let updater (s: string) = s.Split('i')
     let map = [(["Name"], [makeCollect updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<SimpleRecord> rcs map |> ignore) |> ignore
 
 [<Test>]
 let ``record cloning should not be able to apply a function to a simple string`` () =
     let updater (s: string) = s.ToLower()
     let map = [(["Name"], [makeFunction updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleRecord> rcs map
     let res = func simpleTest
     Assert.True((res = { simpleTest with Name = "rick" }), sprintf "Failed with: %A" res)
 
@@ -80,7 +80,7 @@ let simpleArrayRecordEx = { Names = [|"Rick"; "David"; "Mark"; "Paul"; "Pete"|] 
 
 [<Test>]
 let ``record cloning should be able to clone a record with a simple array`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs Map.empty
     let res = func simpleArrayRecordEx
     Assert.AreEqual(simpleArrayRecordEx, res)
 
@@ -89,7 +89,7 @@ let ``record cloning should be able to map over a record with a simple array`` (
     let updater (s: string) = s.ToLower()
     let map = [(["Names"], [makeMap updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func simpleArrayRecordEx
     let expected = { simpleArrayRecordEx with Names = simpleArrayRecordEx.Names |> Array.map (fun s -> s.ToLowerInvariant()) }
     Assert.AreEqual(expected, res)
@@ -99,7 +99,7 @@ let ``record cloning should be able to filter a record with a simple array`` () 
     let filterFun cs = cs <> "Rick"
     let map = [(["Names"], [makeFilter filterFun])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func simpleArrayRecordEx
     let expected = { simpleArrayRecordEx with Names = simpleArrayRecordEx.Names.[1..] }
     Assert.AreEqual(expected, res)
@@ -110,7 +110,7 @@ let ``record cloning should be able to collect a record with a simple array`` ()
     let collectFun (s: string) = s.Split([|';'|], StringSplitOptions.None)
 
     let map = [(["Names"], [makeCollect collectFun])] |> Map.ofSeq
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func sr
     let expected = { Names = [|"Rick"; "David"; "Mark"; "Paul"; "Pete"|] }
     Assert.AreEqual(expected, res)
@@ -120,7 +120,7 @@ let ``record cloning should be able to apply a function to a record with a simpl
     let updater (s: string []) = s |> Array.append [| "Guy" |]
     let map = [(["Names"], [makeFunction updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func simpleArrayRecordEx
     let expected = { simpleArrayRecordEx with Names = simpleArrayRecordEx.Names |> Array.append [| "Guy" |] }
     Assert.AreEqual(expected, res)
@@ -135,7 +135,7 @@ let ``record cloning should be able to map filter and collect a record with a si
     let mapFun (s: string) = s.ToUpper()
 
     let map = [(["Names"], [makeCollect collectFun; makeFilter filterFun; makeAdder addFun; makeMap mapFun])] |> Map.ofSeq
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func sr
     let expected = { Names = [|"DAVID"; "MARK"; "PAUL"; "PETE"; "GUY"|] }
     Assert.AreEqual(expected, res)
@@ -147,7 +147,7 @@ let ``record cloning should be able to add to a simple array type`` () =
     let addFun () = [|"Mark"; "Pete"|]
 
     let map = [(["Names"], [makeAdder addFun])] |> Map.ofSeq
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleArrayRecord> rcs map
     let res = func sr
     let expected = { Names = [|"Rick"; "David"; "Mark"; "Pete"|] }
     Assert.AreEqual(expected, res)
@@ -161,7 +161,7 @@ let lotsOfRecordsEx = { People = [|{Name = "Rick"; Age = 33 }; { Name = "Paul"; 
 
 [<Test>]
 let ``record cloning should be able to clone a record with an array of records`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<LotsOfRecords> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<LotsOfRecords> rcs Map.empty
     let res = func lotsOfRecordsEx
     Assert.AreEqual(lotsOfRecordsEx, res)
 
@@ -170,7 +170,7 @@ let ``record cloning should be able to map over a record with an array of record
     let updater (c: string) = c.ToLower() 
     let map = [(["Name"; "People"], [makeMap updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<LotsOfRecords> rcs map
+    let func = genrateRecordDeepCopyFunction<LotsOfRecords> rcs map
     let res = func lotsOfRecordsEx
     let expected = {lotsOfRecordsEx with People = lotsOfRecordsEx.People |> Array.map (fun r -> { r with Name = r.Name.ToLowerInvariant() }) }
     Assert.AreEqual(expected, res)
@@ -179,13 +179,13 @@ let ``record cloning should be able to map over a record with an array of record
 let ``record cloning should not be able to filter over a record with an array of records`` () =
     let updater (c: string) = c <> "Rick" 
     let map = [(["Name"; "People"], [makeFilter updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<LotsOfRecords> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<LotsOfRecords> rcs map |> ignore) |> ignore
 
 [<Test>]
 let ``record cloning should not be able to collect over a record with an array of records`` () =
     let updater (c: string) = c.Split('i')
     let map = [(["Name"; "People"], [makeCollect updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<LotsOfRecords> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<LotsOfRecords> rcs map |> ignore) |> ignore
 
 [<Test>]
 let ``record cloning should be able to combine array and record level operations`` () =
@@ -195,7 +195,7 @@ let ``record cloning should be able to combine array and record level operations
                ["People"], [makeFilter filterfun]
               ] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<LotsOfRecords> rcs map
+    let func = genrateRecordDeepCopyFunction<LotsOfRecords> rcs map
     let res = func lotsOfRecordsEx
     let expected = {lotsOfRecordsEx with People = lotsOfRecordsEx.People 
                                                   |> Array.map (fun r -> { r with Name = r.Name.ToLowerInvariant() }) 
@@ -214,7 +214,7 @@ let thatGuyWithFriendEx = { thatGuyEx with Friend = Some <| { Name = "Mark"; Age
 
 [<Test>]
 let ``record cloning should be able to clone a record with an option type`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<ThatGuy> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<ThatGuy> rcs Map.empty
     let res = func thatGuyWithFriendEx in
         Assert.AreEqual(thatGuyWithFriendEx, res)
     let res = func thatGuyEx in
@@ -225,7 +225,7 @@ let ``record cloning should be able to map a record with an option type`` () =
     let updater (c: string) = c.ToLower() 
     let map = [(["Name"; "Friend"], [makeMap updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<ThatGuy> rcs map
+    let func = genrateRecordDeepCopyFunction<ThatGuy> rcs map
     let res = func thatGuyWithFriendEx in 
         let expected = { thatGuyWithFriendEx with Friend = Some <| { thatGuyWithFriendEx.Friend.Value with Name = thatGuyWithFriendEx.Friend.Value.Name.ToLowerInvariant() } }
         Assert.AreEqual(expected, res)
@@ -236,7 +236,7 @@ let ``record cloning should be able to filter a record with an option type`` () 
     let updater (c: SimpleRecord) = c.Name <> "Mark"
     let map = [(["Friend"], [makeFilter updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<ThatGuy> rcs map
+    let func = genrateRecordDeepCopyFunction<ThatGuy> rcs map
     let res = func thatGuyWithFriendEx in 
         let expected = { thatGuyWithFriendEx with Friend = None }
         Assert.AreEqual(expected, res)
@@ -252,7 +252,7 @@ let ``record cloning should be able to map and filter a record with an option ty
          ["Friend"], [makeFilter filterFun]
         ] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<ThatGuy> rcs map
+    let func = genrateRecordDeepCopyFunction<ThatGuy> rcs map
     let res = func thatGuyWithFriendEx in 
         let expected = { thatGuyWithFriendEx with Friend = None }
         Assert.AreEqual(expected, res)
@@ -262,7 +262,7 @@ let ``record cloning should be able to map and filter a record with an option ty
 let ``record cloning should not be able to collect a record with an option type`` () =
     let updater (c: string) = c.Split([|'k'|])
     let map = [(["Name"; "Friend"], [makeCollect updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<ThatGuy> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<ThatGuy> rcs map |> ignore) |> ignore
 
 type SimpleOptionRec = { Place: string option }
 let simpleOptionRecEx = { Place = Some "Here" }
@@ -272,7 +272,7 @@ let ``record cloning should be able to apply a function to an option type`` () =
     let updater (c: string option) = c |> Option.map (fun v -> v.ToLower()) 
     let map = [(["Place"], [makeFunction updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<SimpleOptionRec> rcs map
+    let func = genrateRecordDeepCopyFunction<SimpleOptionRec> rcs map
     let res = func simpleOptionRecEx in 
         let expected = { Place = Some "here" }
         Assert.AreEqual(expected, res)
@@ -290,7 +290,7 @@ let loudBirdOwnerEx = { Person = { Name = "Rick"; Age = 33 }; BirdType = Loud 10
 
 [<Test>]
 let ``record cloning should be able to clone a record with a union type`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<BirdOwner> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<BirdOwner> rcs Map.empty
     let res = func loudBirdOwnerEx in
         Assert.AreEqual(loudBirdOwnerEx, res)
 
@@ -299,7 +299,7 @@ let ``record cloning should be able to map a record with a union type`` () =
     let updater l = l - 10
     let map = [(["BirdType"], [makeMap updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<BirdOwner> rcs map
+    let func = genrateRecordDeepCopyFunction<BirdOwner> rcs map
     let res = func loudBirdOwnerEx in
         let expected = { loudBirdOwnerEx with BirdType = Loud 990 }
         Assert.AreEqual(expected, res)
@@ -311,13 +311,13 @@ let ``record cloning should be able to map a record with a union type`` () =
 let ``record cloning should not be able to filter a record with a union type`` () =
     let updater l = l < 0
     let map = [(["BirdType"], [makeFilter updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<BirdOwner> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<BirdOwner> rcs map |> ignore) |> ignore
 
 [<Test>]
 let ``record cloning should not be able to collect a record with a union type`` () =
     let updater l = [| l - 1; l + 1 |]
     let map = [(["BirdType"], [makeCollect updater])] |> Map.ofSeq
-    Assert.Throws<Exception> (fun () -> Fungible.genrateRecordDeepCopyFunction<BirdOwner> rcs map |> ignore) |> ignore
+    Assert.Throws<Exception> (fun () -> genrateRecordDeepCopyFunction<BirdOwner> rcs map |> ignore) |> ignore
     
 type MaybeName = { Name: string option }
 let maybeNameNoneEx = { Name = None }
@@ -327,7 +327,7 @@ let ``record cloning should be able to default a simple option type`` () =
     let updater () = Some "Rick"
     let defaulter = [(["Name"], [makeDefault updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<MaybeName> rcs defaulter
+    let func = genrateRecordDeepCopyFunction<MaybeName> rcs defaulter
     let res = func maybeNameNoneEx in
         let expected = { maybeNameNoneEx with Name = Some "Rick" }
         Assert.AreEqual(expected, res)
@@ -340,7 +340,7 @@ let ``record cloning should be able to default a simple array type`` () =
     let updater () = [| "Rick"; "Mark" |]
     let defaulter = [(["Name"], [makeDefault updater])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<ArrayName> rcs defaulter
+    let func = genrateRecordDeepCopyFunction<ArrayName> rcs defaulter
     let res = func arrayNameEmptyEx in
         let expected = { arrayNameEmptyEx with Name = [| "Rick"; "Mark" |] }
         Assert.AreEqual(expected, res)
@@ -352,7 +352,7 @@ let mapNamePlaceLongEx = { Lookup = ["Dude", "Place"; "Rick", "ESB" ] |> Map.ofL
 
 [<Test>]
 let ``record cloning should be able to clone a record with a map in it`` () =
-    let func = Fungible.genrateRecordDeepCopyFunction<MapNamePlace> rcs Map.empty
+    let func = genrateRecordDeepCopyFunction<MapNamePlace> rcs Map.empty
     let res = func mapNamePlaceEmptyEx in
         Assert.AreEqual(mapNamePlaceEmptyEx, res)
     let res = func mapNamePlaceEx in
@@ -363,7 +363,7 @@ let ``record cloning should be able map over a map`` () =
     let updater (k : string, v : string) = k, v.ToLower() 
     let map = [(["Lookup"], [ <@@ updater @@> |> Map ])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<MapNamePlace> rcs map
+    let func = genrateRecordDeepCopyFunction<MapNamePlace> rcs map
     let res = func mapNamePlaceEmptyEx in
         Assert.AreEqual(mapNamePlaceEmptyEx, { Lookup = Map.empty })
     let res = func mapNamePlaceEx in
@@ -377,7 +377,7 @@ let ``record cloning should be able filter over a map`` () =
     let filter (k,v : string) = k = "Dude" 
     let map = [(["Lookup"], [ <@@ filter @@> |> Filter ])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<MapNamePlace> rcs map
+    let func = genrateRecordDeepCopyFunction<MapNamePlace> rcs map
     let res = func sr0 in
         Assert.AreEqual(sr0, { Lookup = Map.empty })
     let res = func sr1 in
@@ -389,7 +389,7 @@ let ``record cloning should be able default a map`` () =
 
     let map = [(["Lookup"], [ <@@ deffun @@> |> Default ])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<MapNamePlace> rcs map
+    let func = genrateRecordDeepCopyFunction<MapNamePlace> rcs map
     let res0 = func mapNamePlaceEmptyEx 
     Assert.AreEqual(res0, { mapNamePlaceEmptyEx with Lookup = ["Default", "Map"] |> Map.ofList })
     let res1 = func mapNamePlaceLongEx 
@@ -401,7 +401,7 @@ let ``record cloning should be able add to a map`` () =
 
     let map = [(["Lookup"], [ <@@ addfun @@> |> Add ])] |> Map.ofSeq
 
-    let func = Fungible.genrateRecordDeepCopyFunction<MapNamePlace> rcs map
+    let func = genrateRecordDeepCopyFunction<MapNamePlace> rcs map
     let res0 = func mapNamePlaceEmptyEx 
     Assert.AreEqual(res0, { mapNamePlaceEmptyEx with Lookup = ["Default", "Map"] |> Map.ofList })
     let res1 = func mapNamePlaceLongEx 

@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Fungible.fs" />
     <Compile Include="Attributes.fs" />
-    <Compile Include="Apply.fs" />
+    <Compile Include="Simple.fs" />
     <None Include="Script.fsx" />
     <None Include="paket.references" />
     <None Include="paket.template" />

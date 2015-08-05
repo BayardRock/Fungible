@@ -1,7 +1,7 @@
-﻿module Apply
+﻿module Fungible.Simple
 
-open Fungible
-open Attributes
+open Fungible.Core
+open Fungible.Attributes
 
 open System
 open System.Collections.Generic

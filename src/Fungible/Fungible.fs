@@ -1,4 +1,4 @@
-module Fungible
+module Fungible.Core
 
 open System
 open System.Reflection
