@@ -1,7 +1,7 @@
 ﻿namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("Fungible")>]
+[<assembly: AssemblyTitleAttribute("Fungible.Barb")>]
 [<assembly: AssemblyProductAttribute("Fungible")>]
 [<assembly: AssemblyDescriptionAttribute("A library for fast reflective changes to immutable data trees")>]
 [<assembly: AssemblyVersionAttribute("0.0.1")>]

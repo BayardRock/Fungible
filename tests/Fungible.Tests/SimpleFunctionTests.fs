@@ -1,5 +1,6 @@
 ﻿module SimpleFunctions.Tests
 
+open Fungible.Core
 open Fungible.Attributes
 open Fungible.Simple
 
@@ -77,8 +78,10 @@ module TestFunctions =
             locs |> Array.append [| for c in countries do yield { Location.Default with Country = Some c } |]
         else locs
 
-let cleanEngineHitBasic<'T> (cleaners: BasicCleaner []) eh = 
-    let cleanerFunc = compileCleaners<'T, 'T> TestFunctions.ModuleType cleaners
+let cleanEngineHitBasic<'T> (cleaners: FunctionCleanerDefinition []) eh = 
+    let propertyMap = getPathsAndTypes<'T>()
+    let basicCleaners = cleaners |> Array.map (fun c -> generateBasicCleaner<'T> TestFunctions.ModuleType c propertyMap)
+    let cleanerFunc = compileCleaners<'T, 'T> basicCleaners
     cleanerFunc eh eh
 
 [<Test>]
