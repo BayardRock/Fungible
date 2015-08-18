@@ -110,7 +110,7 @@ let defaultBarbSettings =
         |> Set.add "System.IO"
     { Barb.Representation.BarbSettings.Default with Namespaces = barbNamespaces }
 
-let generateBarbCleaner<'U> (barbSettings: BarbSettings) (advanced: BarbCleanerDefinition) (propertyMap: Map<string list, Type>) =
+let generateBarbCleaner<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (advanced: BarbCleanerDefinition) =
     let path = nameToPath advanced.Field  
     let propertType = propertyMap.[path]
     let cleaner = generateAdvancedCleaner barbSettings advanced.Function advanced.Type typeof<'U> propertType

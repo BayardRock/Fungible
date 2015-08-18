@@ -120,7 +120,7 @@ open Types
 
 type Cleaner = string list * FieldAction
 
-let generateBasicCleaner<'U> (functionModule: Type) (basic: FunctionCleanerDefinition) (propertyMap: Map<string list, Type>) : Cleaner =
+let generateBasicCleaner<'U> (functionModule: Type) (propertyMap: Map<string list, Type>) (basic: FunctionCleanerDefinition) : Cleaner =
     let path = nameToPath basic.Field 
     let propertType = propertyMap.[path]
     let cleaner = generateBasicCleaner functionModule propertType basic.Operation basic.Args

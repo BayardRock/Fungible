@@ -80,7 +80,7 @@ module TestFunctions =
 
 let cleanEngineHitBasic<'T> (cleaners: FunctionCleanerDefinition []) eh = 
     let propertyMap = getPathsAndTypes<'T>()
-    let basicCleaners = cleaners |> Array.map (fun c -> generateBasicCleaner<'T> TestFunctions.ModuleType c propertyMap)
+    let basicCleaners = cleaners |> Array.map (generateBasicCleaner<'T> TestFunctions.ModuleType propertyMap)
     let cleanerFunc = compileCleaners<'T, 'T> basicCleaners
     cleanerFunc eh eh
 
