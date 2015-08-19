@@ -52,7 +52,7 @@ module TestFunctions =
     type internal Marker = interface end
     let ModuleType = typeof<Marker>.DeclaringType
 
-    [<CleaningFunctionType("Map")>]
+    [<TransformFunctionTypeAttribute("Map")>]
     [<Description("Replaces accented characters with their english equivalents")>]
     let stripAccents (inStr: string) = 
         let sb2 = new StringBuilder()
@@ -62,7 +62,7 @@ module TestFunctions =
                 sb2.Append(c) |> ignore
         sb2.ToString().Normalize(NormalizationForm.FormC)    
 
-    [<CleaningFunctionType("Map")>]
+    [<TransformFunctionTypeAttribute("Map")>]
     [<Description("Removes the specified characters from the given string")>]
     let removeCharacters (toRemove: char []) (inStr: string) =    
         let sb = new StringBuilder()
@@ -71,23 +71,23 @@ module TestFunctions =
         sb.ToString()   
 
 
-    [<CleaningFunctionType("Function")>]
+    [<TransformFunctionTypeAttribute("Function")>]
     [<Description("Adds the following countries with none are specified")>]
     let defaultCountries (countries: string []) (locs: Location []) = 
         if locs |> Seq.forall (fun l -> l.Country.IsNone) then
             locs |> Array.append [| for c in countries do yield { Location.Default with Country = Some c } |]
         else locs
 
-let cleanEngineHitBasic<'T> (cleaners: FunctionCleanerDefinition []) eh = 
+let cleanEngineHitBasic<'T> (cleaners: TransformDefinition []) eh = 
     let propertyMap = getPathsAndTypes<'T>()
-    let basicCleaners = cleaners |> Array.map (generateBasicCleaner<'T> TestFunctions.ModuleType propertyMap)
-    let cleanerFunc = compileCleaners<'T, 'T> basicCleaners
+    let basicCleaners = cleaners |> Array.map (generateTransform<'T> TestFunctions.ModuleType propertyMap)
+    let cleanerFunc = compileTransforms<'T, 'T> basicCleaners
     cleanerFunc eh eh
 
 [<Test>]
 let ``basic data cleaning should properly work for removing extended chars from names`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Names = [| "Montréal" |] } } 
-    let settings =  [| { Field = "Cust.Names"; Operation = "stripAccents"; Args = [||] } |]
+    let settings =  [| { TargetPath = "Cust.Names"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
     Assert.AreEqual([| "Montreal" |], res.Cust.Names)
 
@@ -95,27 +95,27 @@ let ``basic data cleaning should properly work for removing extended chars from 
 let ``basic data cleaning should properly work for mapping nested arrays of names`` () = 
     let testRec = { Person.Default with StructuredNames = [|[|"Montréal"|]; [|"Montréal"|]|]}
 
-    let settings =  [| { Field = "StructuredNames"; Operation = "stripAccents"; Args = [||] } |]
+    let settings =  [| { TargetPath = "StructuredNames"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
     Assert.AreEqual([|[| "Montreal" |]; [| "Montreal" |]|], res.StructuredNames)
 
 [<Test>]
 let ``basic data cleaning should properly map over option types nested in records in arrays`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Locations = [| { Location.Default with City = Some "Montréal" } |] } } 
-    let settings =  [| { Field = "Cust.Locations.City"; Operation = "stripAccents"; Args = [||] } |]
+    let settings =  [| { TargetPath = "Cust.Locations.City"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
     Assert.AreEqual("Montreal", res.Cust.Locations.[0].City.Value)
 
 [<Test>]
 let ``basic data cleaning should properly work for replacing arbitrary substrings`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Names = [| "Montréal" |] } } 
-    let settings =  [| { Field = "Cust.Names"; Operation = "removeCharacters"; Args = [|"M"; "o"; "n"; "t"|] } |]
+    let settings =  [| { TargetPath = "Cust.Names"; FunctionName = "removeCharacters"; FunctionArgs = [|"M"; "o"; "n"; "t"|] } |]
     let res = cleanEngineHitBasic settings testRec
     Assert.AreEqual([| "réal" |], res.Cust.Names)
 
 [<Test>]
 let ``basic data cleaning should properly default arrays of objects`` () =
     let testRec = { testRec with Cust = { testRec.Cust with Locations = [||] } } 
-    let settings =  [| { Field = "Cust.Locations"; Operation = "defaultCountries"; Args = [|"USA"; "US"|] } |]
+    let settings =  [| { TargetPath = "Cust.Locations"; FunctionName = "defaultCountries"; FunctionArgs = [|"USA"; "US"|] } |]
     let res = cleanEngineHitBasic settings testRec
     Assert.AreEqual([| { Location.Default with Country = Some "USA" }; { Location.Default with Country = Some "US" } |], res.Cust.Locations)

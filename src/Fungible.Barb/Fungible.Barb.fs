@@ -16,22 +16,32 @@ open Barb.Representation
 
 open Fungible.Simple.Types
 
+/// <summary>
+/// Defines a Barb function as a transformation to apply
+/// </summary>
 [<CLIMutable>]
-type BarbCleanerDefinition = 
+type BarbTransformDefinition = 
     {
-        [<Description("The target field for this cleaner")>]
-        Field: string
-        [<Description("The kind of operation to be performed on the target field")>]
-        Type: string
+        /// The path to the target field for this cleaner
+        [<Description("The path to the target field for this cleaner")>]
+        TargetPath: string
+        /// The kind of operation to be performed on the target field (map, filter, collect, default, function, or add
+        [<Description("The kind of operation to be performed on the target field (map, filter, collect, default, function, or add")>]
+        Kind: string
+        /// The Barb function to be used on the given field
         [<Description("The Barb function to be used on the given field")>]
         Function: string
     }
-    with override t.ToString () = sprintf "%s with %s of \"%s\"" t.Field t.Type t.Function
+    with override t.ToString () = sprintf "%s with %s of \"%s\"" t.TargetPath t.Kind t.Function
 
+/// A wrapper used to provide an extra argument to the Barb function
 type ValueContainer2<'u,'t> = { Scope: 'u; Value: 't }
+/// Used to create ValueContainer2 in scope in Barb
 let MkValueContainer2 u t = { Scope = u; Value = t }
 
-module DataCleaningWrappers =
+module internal BarbTransformWrappers =
+    open CollectionHelpers
+    open ExprHelpers
 
     let mapToKeyValueArray (m: Map<'k,'v>) =
         m |> Map.toArray |> Array.map (fun (k,v) -> new KeyValuePair<_,_>(k,v))
@@ -61,6 +71,7 @@ module DataCleaningWrappers =
         | _ -> None       
 
 module internal Internals = 
+    open ExprHelpers
 
     let makeBarbFunction (barbSettings: BarbSettings) (recordType: Type) (inputType: Type) (outputType: Type) (textFunc: string) : obj -> obj =
         let wrappedInType = typeof<ValueContainer2<_,_>>.GetGenericTypeDefinition().MakeGenericType(recordType, inputType)
@@ -71,13 +82,13 @@ module internal Internals =
         let actualInType = getActualType targetType fk.InputKind
     
         let barbInputType, barbInputConverter =
-            match DataCleaningWrappers.getTypeWrapper targetType fk.InputKind with 
+            match BarbTransformWrappers.getTypeWrapper targetType fk.InputKind with 
             | None -> actualInType, None
             | Some (bit, tobit, frombit) -> bit, Some tobit
 
         let barbOutputType, barbOutputConverter = 
             let actualOutType = getActualType targetType fk.OutputKind
-            match DataCleaningWrappers.getTypeWrapper targetType fk.OutputKind with  
+            match BarbTransformWrappers.getTypeWrapper targetType fk.OutputKind with  
             | None -> actualOutType, None
             | Some (bit, tobit, frombit) -> bit, Some frombit
 
@@ -102,6 +113,7 @@ module internal Internals =
 
 open Internals
 
+/// Suggested default Barb Settings
 let defaultBarbSettings = 
     let barbNamespaces = 
         Barb.Representation.BarbSettings.Default.Namespaces
@@ -110,8 +122,14 @@ let defaultBarbSettings =
         |> Set.add "System.IO"
     { Barb.Representation.BarbSettings.Default with Namespaces = barbNamespaces }
 
-let generateBarbCleaner<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (advanced: BarbCleanerDefinition) =
-    let path = nameToPath advanced.Field  
+/// <summary>
+/// 
+/// </summary>
+/// <param name="barbSettings"></param>
+/// <param name="propertyMap"></param>
+/// <param name="advanced"></param>
+let generateBarbTransform<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (advanced: BarbTransformDefinition) =
+    let path = nameToPath advanced.TargetPath  
     let propertType = propertyMap.[path]
-    let cleaner = generateAdvancedCleaner barbSettings advanced.Function advanced.Type typeof<'U> propertType
+    let cleaner = generateAdvancedCleaner barbSettings advanced.Function advanced.Kind typeof<'U> propertType
     path, cleaner

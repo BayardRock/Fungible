@@ -13,25 +13,34 @@ open FSharp
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 
+/// <summary>
+/// The definition of an F# cleaner function 
+/// </summary>
 [<CLIMutable>]
-type FunctionCleanerDefinition = 
+type TransformDefinition = 
     {
-        [<Description("The target field for this cleaner")>]
-        Field: string
-        [<Description("The operation to perform on the target field")>]
-        Operation: string
+        /// The path to the target field for this cleaner
+        [<Description("The path to the target field for this cleaner")>]
+        TargetPath: string
+        /// The name of the function which will be performed on the target field
+        [<Description("The name of the function which will be performed on the target field")>]
+        FunctionName: string
+        /// The arguments to pass to the function
         [<Description("Arguments to be passed to the operation")>]
-        Args: string []
+        FunctionArgs: string []
     }
-    with override t.ToString () = sprintf "%s <- %s with %A" t.Field t.Operation t.Args
+    with override t.ToString () = sprintf "%s <- %s with %A" t.TargetPath t.FunctionName t.FunctionArgs
 
+/// Semi-internal machinery used for figuring out information about input types
 module Types = 
 
+    /// Used to describe how a transform interacts with data
     type TypeKind =
         | Inner
         | Outter
         | Fixed of Type
 
+    /// A description of a transform in terms of its types and needed wrappers
     type FunctionKind =
         {
             ExprWrapper: Expr -> FieldAction
@@ -39,6 +48,7 @@ module Types =
             OutputKind: TypeKind
         }
 
+    /// Based on the kind of transform this function tells the machinery which types to look at
     let getFunctionKind (funcType: string) = 
         match funcType.ToLowerInvariant() with
         | "map" ->      Map,        Inner,                  Inner
@@ -50,6 +60,9 @@ module Types =
         | otherwise -> failwithf "Unexpected type in data cleaner: %s" otherwise     
         |> fun (ew, ik, ok) -> { ExprWrapper = ew; InputKind = ik; OutputKind = ok }
 
+    open CollectionHelpers
+    
+    /// Gets the inner type(s) of a collection
     let getInnerType (targetType: Type) = 
         match targetType with
         | IsMapType t -> FSharpType.MakeTupleType (t.GetGenericArguments())
@@ -57,12 +70,14 @@ module Types =
         | t when t.IsArray -> t.GetElementType()
         | t -> t    
 
+    /// Gets the actual type used for wrapping the transform input
     let getActualType (targetType: Type) (tk: TypeKind) =
         match tk with
         | Inner -> getInnerType targetType 
         | Outter -> targetType
         | Fixed t -> t
 
+    /// Converts a standard .NET long form name into a path
     let nameToPath (name: string) = 
         name.Split([|'.'|], StringSplitOptions.None) |> Array.toList |> List.rev
 
@@ -118,20 +133,30 @@ module internal Internals =
 open Internals
 open Types
 
-type Cleaner = string list * FieldAction
+type Transform = string list * FieldAction
 
-let generateBasicCleaner<'U> (functionModule: Type) (propertyMap: Map<string list, Type>) (basic: FunctionCleanerDefinition) : Cleaner =
-    let path = nameToPath basic.Field 
+/// <summary>
+/// Creates a transform out of an F# function as defined in a FunctionCleanerDefinition
+/// </summary>
+/// <param name="functionModule">The module in which the function lives</param>
+/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes<'t></param>
+/// <param name="basic">A definition of the transform to be used</param>
+let generateTransform<'U> (functionModule: Type) (propertyMap: Map<string list, Type>) (basic: TransformDefinition) : Transform =
+    let path = nameToPath basic.TargetPath 
     let propertType = propertyMap.[path]
-    let cleaner = generateBasicCleaner functionModule propertType basic.Operation basic.Args
+    let cleaner = generateBasicCleaner functionModule propertType basic.FunctionName basic.FunctionArgs
     path, cleaner
 
-let compileCleaners<'U, 'T> (cleaners: Cleaner seq) =
+/// <summary>
+/// Takes a set of transforms and compiles them into a function that does all of the given transforms to the data tree
+/// </summary>
+/// <param name="transforms">The sequence of transforms as applied to the data.</param>
+let compileTransforms<'U, 'T> (transforms: Transform seq) =
     let recordCloningSettings = { CloneWhenNoChanges = false; FailOnUnsupportedType = true }
 
     let compiledCleaners = 
-        cleaners 
+        transforms
         |> Seq.groupBy fst
         |> Seq.map (fun (sl, slfa) -> sl, slfa |> Seq.map snd |> Seq.toList)
         |> Map.ofSeq    
-    genrateRecordDeepCopyFunctionWithArgs<'U,'T> recordCloningSettings "replaceMe" compiledCleaners
+    genrateRecordTransformFunctionWithArgs<'U,'T> recordCloningSettings "replaceMe" compiledCleaners
