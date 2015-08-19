@@ -123,13 +123,13 @@ let defaultBarbSettings =
     { Barb.Representation.BarbSettings.Default with Namespaces = barbNamespaces }
 
 /// <summary>
-/// 
+///  Creates a transform out of an Barb function as defined in a BarbTransformDefinition
 /// </summary>
-/// <param name="barbSettings"></param>
-/// <param name="propertyMap"></param>
-/// <param name="advanced"></param>
-let generateBarbTransform<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (advanced: BarbTransformDefinition) =
-    let path = nameToPath advanced.TargetPath  
+/// <param name="barbSettings">Settings to use for Barb when generating the transform</param>
+/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes<'t></param>
+/// <param name="transformDef">The definition of the Barb function to be generated</param>
+let generateBarbTransform<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (transformDef: BarbTransformDefinition) =
+    let path = nameToPath transformDef.TargetPath  
     let propertType = propertyMap.[path]
-    let cleaner = generateAdvancedCleaner barbSettings advanced.Function advanced.Kind typeof<'U> propertType
+    let cleaner = generateAdvancedCleaner barbSettings transformDef.Function transformDef.Kind typeof<'U> propertType
     path, cleaner

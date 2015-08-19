@@ -136,7 +136,7 @@ open Types
 type Transform = string list * FieldAction
 
 /// <summary>
-/// Creates a transform out of an F# function as defined in a FunctionCleanerDefinition
+/// Creates a transform out of an F# function as defined in a TransformDefinition
 /// </summary>
 /// <param name="functionModule">The module in which the function lives</param>
 /// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes<'t></param>
