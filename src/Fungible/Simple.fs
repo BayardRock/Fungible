@@ -139,7 +139,7 @@ type Transform = string list * FieldAction
 /// Creates a transform out of an F# function as defined in a TransformDefinition
 /// </summary>
 /// <param name="functionModule">The module in which the function lives</param>
-/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes<'t></param>
+/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes</param>
 /// <param name="basic">A definition of the transform to be used</param>
 let generateTransform<'U> (functionModule: Type) (propertyMap: Map<string list, Type>) (basic: TransformDefinition) : Transform =
     let path = nameToPath basic.TargetPath 

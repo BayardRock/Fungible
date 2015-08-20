@@ -126,7 +126,7 @@ let defaultBarbSettings =
 ///  Creates a transform out of an Barb function as defined in a BarbTransformDefinition
 /// </summary>
 /// <param name="barbSettings">Settings to use for Barb when generating the transform</param>
-/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes<'t></param>
+/// <param name="propertyMap">A map of paths to types gotten from getPathsAndTypes</param>
 /// <param name="transformDef">The definition of the Barb function to be generated</param>
 let generateBarbTransform<'U> (barbSettings: BarbSettings) (propertyMap: Map<string list, Type>) (transformDef: BarbTransformDefinition) =
     let path = nameToPath transformDef.TargetPath  
