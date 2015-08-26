@@ -1,11 +1,9 @@
 ﻿module SimpleFunctions.Tests
 
 open Fungible.Core
-open Fungible.Attributes
-open Fungible.Simple
+open Fungible.StaticReflection
 
 open System
-open System.ComponentModel
 open System.Text
 open System.Globalization
 

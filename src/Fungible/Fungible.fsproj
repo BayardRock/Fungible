@@ -46,8 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fungible.fs" />
-    <Compile Include="Attributes.fs" />
-    <Compile Include="Simple.fs" />
+    <Compile Include="StaticReflection.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>

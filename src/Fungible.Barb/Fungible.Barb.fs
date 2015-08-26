@@ -9,12 +9,12 @@ open Microsoft.FSharp.Reflection
 
 open Fungible
 open Fungible.Core
-open Fungible.Simple
+open Fungible.StaticReflection
 
 open Barb.Compiler
 open Barb.Representation
 
-open Fungible.Simple.Types
+open Fungible.StaticReflection.Types
 
 /// <summary>
 /// Defines a Barb function as a transformation to apply
