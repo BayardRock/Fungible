@@ -18,7 +18,7 @@ let makeDefault (f: unit -> 'a) = <@@ f @@> |> Default
 let makeFunction (f: 'a -> 'a) = <@@ f @@> |> Function
 let makeAdder (f: unit -> 'a) = <@@ f @@> |> Add
 
-let rcs = RecordCloningSettings.Default
+let rcs = FungibleCoreSettings.Default
 //
 // Simple Types 
 //

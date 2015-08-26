@@ -102,16 +102,21 @@ module CollectionHelpers =
 open ExprHelpers
 open CollectionHelpers
 
-type RecordCloningSettings =
+type FungibleCoreSettings =
     {
+        /// When true it will attempt to clone the entire structure
         CloneWhenNoChanges: bool
+        /// When true it will fail when it finds a type it doesn't 
+        /// know about, when false it will simply return the same
+        /// instance
         FailOnUnsupportedType: bool
     }
-    with static member Default = { CloneWhenNoChanges = false; FailOnUnsupportedType = false }
+    with static member Default = { CloneWhenNoChanges = false; 
+                                   FailOnUnsupportedType = false }
 
 module internal Copiers = 
 
-    let rec makeCopyExpr (rcs: RecordCloningSettings) (mtype: Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
+    let rec makeCopyExpr (rcs: FungibleCoreSettings) (mtype: Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
         match mtype with 
         | IsOptionType _ -> genOptionCopy rcs mtype funcs path instance
         | _ when FSharpType.IsRecord mtype -> genRecordCopier rcs mtype funcs path instance
