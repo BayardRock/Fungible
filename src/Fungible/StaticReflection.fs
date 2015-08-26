@@ -1,15 +1,11 @@
-﻿module Fungible.Simple
+﻿module Fungible.StaticReflection
 
 open Fungible.Core
 open Fungible.Attributes
 
 open System
-open System.Collections.Generic
-open System.Linq
-open System.Linq.Expressions
 open System.ComponentModel
 
-open FSharp
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 
