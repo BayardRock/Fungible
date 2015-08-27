@@ -58,7 +58,7 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <Compile Include="FungibleTests.fs" />
-    <Compile Include="SimpleFunctionTests.fs" />
+    <Compile Include="StaticReflectionTests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
