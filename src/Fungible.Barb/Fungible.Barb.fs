@@ -25,7 +25,8 @@ type BarbTransformDefinition =
         /// The path to the target field for this cleaner
         [<Description("The path to the target field for this cleaner")>]
         TargetPath: string
-        /// The kind of operation to be performed on the target field (map, filter, collect, default, function, or add
+        /// The kind of operation to be performed on the target field 
+        /// (map, filter, collect, default, function, or add)
         [<Description("The kind of operation to be performed on the target field (map, filter, collect, default, function, or add")>]
         Kind: string
         /// The Barb function to be used on the given field

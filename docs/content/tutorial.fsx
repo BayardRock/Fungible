@@ -7,7 +7,8 @@
 Introducing your project
 ========================
 
-Let's start with loading the basic reference and opening the appropriate namespaces.
+Let's start with the core functionality by loading the basic references 
+and opening the appropriate namespaces.
 
 *)
 #r "Fungible.dll"
@@ -50,12 +51,12 @@ let upperFunMapExpr =
 
 let ex1 = 
     let functionMap = [(["City"; "Locations"], [ upperFunMapExpr ])] |> Map.ofList
-    let transform = genrateRecordTransformFunction<Person> (RecordCloningSettings.Default) functionMap
+    let transform = genrateRecordTransformFunction<Person> (FungibleCoreSettings.Default) functionMap
     testPersons |> List.map transform
 
 let ex2 = 
     let functionMap = [(["Address"; "Locations"], [ upperFunMapExpr ])] |> Map.ofList
-    let transform = genrateRecordTransformFunction<Person> (RecordCloningSettings.Default) functionMap
+    let transform = genrateRecordTransformFunction<Person> (FungibleCoreSettings.Default) functionMap
     testPersons |> List.map transform
 
 
@@ -72,7 +73,7 @@ let ex3 =
                         ["State"; "Locations"], [upperFunMapExpr] 
                         ["Country"; "Locations"], [upperFunMapExpr] 
                       ] |> Map.ofList
-    let transform = genrateRecordTransformFunction<Person> (RecordCloningSettings.Default) functionMap
+    let transform = genrateRecordTransformFunction<Person> (FungibleCoreSettings.Default) functionMap
     testPersons |> List.map transform
 
 (**
@@ -88,10 +89,44 @@ let removeUpperVowelsExpr =
 
 let ex4 = 
     let functionMap = [(["City"; "Locations"], [ upperFunMapExpr; removeUpperVowelsExpr ])] |> Map.ofList
-    let transform = genrateRecordTransformFunction<Person> (RecordCloningSettings.Default) functionMap
+    let transform = genrateRecordTransformFunction<Person> (FungibleCoreSettings.Default) functionMap
     testPersons |> List.map transform
 
 let ex5 = 
     let functionMap = [(["City"; "Locations"], [ removeUpperVowelsExpr; upperFunMapExpr ])] |> Map.ofList
-    let transform = genrateRecordTransformFunction<Person> (RecordCloningSettings.Default) functionMap
+    let transform = genrateRecordTransformFunction<Person> (FungibleCoreSettings.Default) functionMap
     testPersons |> List.map transform
+
+(**
+Let's dig into the static reflection part of the library, which is used
+for pulling functions in from F# libraries based on a settings spec.
+*)
+
+open Fungible.StaticReflection
+
+module TestFunctions = 
+    open System
+    open System.Text
+    open System.ComponentModel
+
+    type internal Marker = interface end
+    let ModuleType = typeof<Marker>.DeclaringType
+
+    [<TransformFunctionType("Map")>]
+    [<Description("Removes the specified characters from the given string")>]
+    let removeCharacters (toRemove: char []) (inStr: string) =    
+        let sb = new StringBuilder()
+        for c in inStr do            
+            if Array.IndexOf(toRemove, c) = -1 then sb.Append(c) |> ignore
+        sb.ToString()   
+
+let ex6 = 
+    let settings =  [| { TargetPath = "Names"; 
+                         FunctionName = "removeCharacters"; 
+                         FunctionArgs = [| "R"; "r" |] } |]
+    let propertyMap = getPathsAndTypes<Person>()
+    let generator = generateTransform TestFunctions.ModuleType propertyMap
+    let transforms = settings |> Array.map generator
+    let compiledTransforms = compileTransforms<Person, Person> transforms
+    testPersons |> List.map (fun p -> compiledTransforms p p)
+

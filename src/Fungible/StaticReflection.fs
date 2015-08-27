@@ -144,7 +144,6 @@ module internal Internals =
         let functionKind = getFunctionKind funcType.Type
 
         let inType = getActualType targetType functionKind.InputKind
-        //let outType = getActualType targetType functionKind.OutputKind
 
         if prms.Length = 1 then
             let arg = Var("x", inType, false)
