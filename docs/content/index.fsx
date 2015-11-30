@@ -7,7 +7,7 @@
 Fungible
 ======================
 
-Documentation
+Fungible is a library for updating typed immutable record/map trees in F# via function injection into code which copies said tree. We at BayardRock use it to do dynamic data cleaning of inputs based on our configuration file.
 
 <div class="row">
   <div class="span1"></div>
@@ -20,25 +20,10 @@ Documentation
   <div class="span1"></div>
 </div>
 
-Example
--------
-
-This example demonstrates using a function defined in this sample library.
-
-*)
-#r "Fungible.dll"
-open Fungible
-
-
-(**
-Some more info
+Documentation is currently a work in progress.
 
 Samples & documentation
 -----------------------
-
-The library comes with comprehensible documentation. 
-It can include tutorials automatically generated from `*.fsx` files in [the content folder][content]. 
-The API reference is automatically generated from Markdown comments in the library implementation.
 
  * [Tutorial](tutorial.html) contains a further explanation of this sample library.
 

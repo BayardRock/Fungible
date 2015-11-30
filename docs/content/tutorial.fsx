@@ -4,11 +4,11 @@
 #I "../../bin/Fungible.Barb"
 
 (**
-Introducing your project
+Getting started with Fungible
 ========================
 
 Let's start with the core functionality by loading the basic references 
-and opening the appropriate namespaces.
+and opening the appropriate namespaces. Barb is an optional dependency, but we'll be using it in later examples.
 
 *)
 #r "Fungible.dll"
@@ -30,7 +30,7 @@ type Person = { Names: string []; DOBs: Date [];
                 Fields: Map<string, string> }
 
 (**
-As well as a sample to play around with.
+As well as a sample to play around with. In this case we are only using one record sample for clarity, but Fungible was desinged to be used with record counts in the hundreds of thousands to millions.
 *)
 
 let testPersons =
