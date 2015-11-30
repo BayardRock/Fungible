@@ -35,20 +35,388 @@
           
 <h1><a name="Introducing-your-project" class="anchor" href="#Introducing-your-project">Introducing your project</a></h1>
 
-<p>Say more</p>
+<p>Let's start with the core functionality by loading the basic references 
+and opening the appropriate namespaces.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;Fungible.dll&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;Barb.dll&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;Fungible.Barb.dll&quot;</span>
+
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Fungible</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">Fungible</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">Core</span>
 </code></pre></td>
 </tr>
 </table>
 
-<p>Some more info</p>
+<p>Next we need to define a record tree structure to operate on.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="t">Date</span> <span class="o">=</span> { <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">Day</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="t">byte</span>; <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">Month</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="t">byte</span>; <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Year</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="t">uint16</span> }
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="t">Location</span> <span class="o">=</span> { <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Address</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="t">string</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="t">option</span>; <span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="i">City</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="t">string</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="t">option</span>; 
+                  <span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="i">State</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="t">string</span> <span onmouseout="hideTip(event, 'fs12', 20)" onmouseover="showTip(event, 'fs12', 20)" class="t">option</span>; <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="i">Country</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 22)" onmouseover="showTip(event, 'fs11', 22)" class="t">string</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="t">option</span> }
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs16', 24)" onmouseover="showTip(event, 'fs16', 24)" class="t">Person</span> <span class="o">=</span> { <span onmouseout="hideTip(event, 'fs17', 25)" onmouseover="showTip(event, 'fs17', 25)" class="i">Names</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 26)" onmouseover="showTip(event, 'fs11', 26)" class="t">string</span> []; <span onmouseout="hideTip(event, 'fs18', 27)" onmouseover="showTip(event, 'fs18', 27)" class="i">DOBs</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs3', 28)" onmouseover="showTip(event, 'fs3', 28)" class="t">Date</span> []; 
+                <span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="i">Citizenships</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 30)" onmouseover="showTip(event, 'fs11', 30)" class="t">string</span> []; <span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="i">Locations</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs9', 32)" onmouseover="showTip(event, 'fs9', 32)" class="t">Location</span> []; 
+                <span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">Fields</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs22', 34)" onmouseover="showTip(event, 'fs22', 34)" class="t">Map</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs11', 35)" onmouseover="showTip(event, 'fs11', 35)" class="t">string</span>, <span onmouseout="hideTip(event, 'fs11', 36)" onmouseover="showTip(event, 'fs11', 36)" class="t">string</span><span class="o">&gt;</span> }
+</code></pre></td>
+</tr>
+</table>
+
+<p>As well as a sample to play around with.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">testPersons</span> <span class="o">=</span>
+    [
+        { <span class="i">Names</span> <span class="o">=</span> [| <span class="s">&quot;Rick Minerich&quot;</span> |]; <span class="i">DOBs</span> <span class="o">=</span> [| { <span class="i">Day</span> <span class="o">=</span> <span class="n">8uy</span>; <span class="i">Month</span> <span class="o">=</span> <span class="n">24uy</span>; <span class="i">Year</span> <span class="o">=</span> <span class="n">1886us</span> } |]
+          <span class="i">Citizenships</span> <span class="o">=</span> [| <span class="s">&quot;Mars&quot;</span>; <span class="s">&quot;Twitter&quot;</span> |]
+          <span class="i">Locations</span> <span class="o">=</span> [| { <span class="i">Address</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="p">None</span>; <span class="i">City</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="p">Some</span> <span class="s">&quot;New York&quot;</span>; <span class="i">State</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs25', 40)" onmouseover="showTip(event, 'fs25', 40)" class="p">Some</span> <span class="s">&quot;NY&quot;</span>; <span class="i">Country</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 41)" onmouseover="showTip(event, 'fs24', 41)" class="p">None</span> } |]
+          <span class="i">Fields</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 43)" onmouseover="showTip(event, 'fs26', 43)" class="i">empty</span>
+        }
+    ] 
+</code></pre></td>
+</tr>
+</table>
+
+<p>For a simple starting example we will just transform the City field within 
+the Locations member of person to be uppercase. When the type is None no action 
+will be taken, when it's Some the transform will be applied.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 44)" onmouseover="showTip(event, 'fs27', 44)" class="i">upperFunMapExpr</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs28', 45)" onmouseover="showTip(event, 'fs28', 45)" class="f">upperFun</span> (<span onmouseout="hideTip(event, 'fs29', 46)" onmouseover="showTip(event, 'fs29', 46)" class="i">s</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 47)" onmouseover="showTip(event, 'fs11', 47)" class="t">string</span>) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 49)" onmouseover="showTip(event, 'fs30', 49)" class="f">ToUpper</span>()
+    &lt;@@ <span onmouseout="hideTip(event, 'fs28', 50)" onmouseover="showTip(event, 'fs28', 50)" class="f">upperFun</span> @@&gt; <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 51)" onmouseover="showTip(event, 'fs22', 51)" class="p">Map</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 52)" onmouseover="showTip(event, 'fs31', 52)" class="i">ex1</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 53)" onmouseover="showTip(event, 'fs32', 53)" class="i">functionMap</span> <span class="o">=</span> [([<span class="s">&quot;City&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [ <span onmouseout="hideTip(event, 'fs27', 54)" onmouseover="showTip(event, 'fs27', 54)" class="i">upperFunMapExpr</span> ])] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 55)" onmouseover="showTip(event, 'fs22', 55)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 56)" onmouseover="showTip(event, 'fs33', 56)" class="f">ofList</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 57)" onmouseover="showTip(event, 'fs34', 57)" class="f">transform</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 58)" onmouseover="showTip(event, 'fs35', 58)" class="f">genrateRecordTransformFunction</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 59)" onmouseover="showTip(event, 'fs16', 59)" class="t">Person</span><span class="o">&gt;</span> (<span onmouseout="hideTip(event, 'fs36', 60)" onmouseover="showTip(event, 'fs36', 60)" class="t">FungibleCoreSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 61)" onmouseover="showTip(event, 'fs37', 61)" class="i">Default</span>) <span onmouseout="hideTip(event, 'fs32', 62)" onmouseover="showTip(event, 'fs32', 62)" class="i">functionMap</span>
+    <span onmouseout="hideTip(event, 'fs23', 63)" onmouseover="showTip(event, 'fs23', 63)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 64)" onmouseover="showTip(event, 'fs38', 64)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 65)" onmouseover="showTip(event, 'fs39', 65)" class="f">map</span> <span onmouseout="hideTip(event, 'fs34', 66)" onmouseover="showTip(event, 'fs34', 66)" class="f">transform</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 67)" onmouseover="showTip(event, 'fs40', 67)" class="i">ex2</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 68)" onmouseover="showTip(event, 'fs32', 68)" class="i">functionMap</span> <span class="o">=</span> [([<span class="s">&quot;Address&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [ <span onmouseout="hideTip(event, 'fs27', 69)" onmouseover="showTip(event, 'fs27', 69)" class="i">upperFunMapExpr</span> ])] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 70)" onmouseover="showTip(event, 'fs22', 70)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 71)" onmouseover="showTip(event, 'fs33', 71)" class="f">ofList</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 72)" onmouseover="showTip(event, 'fs34', 72)" class="f">transform</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 73)" onmouseover="showTip(event, 'fs35', 73)" class="f">genrateRecordTransformFunction</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 74)" onmouseover="showTip(event, 'fs16', 74)" class="t">Person</span><span class="o">&gt;</span> (<span onmouseout="hideTip(event, 'fs36', 75)" onmouseover="showTip(event, 'fs36', 75)" class="t">FungibleCoreSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 76)" onmouseover="showTip(event, 'fs37', 76)" class="i">Default</span>) <span onmouseout="hideTip(event, 'fs32', 77)" onmouseover="showTip(event, 'fs32', 77)" class="i">functionMap</span>
+    <span onmouseout="hideTip(event, 'fs23', 78)" onmouseover="showTip(event, 'fs23', 78)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 79)" onmouseover="showTip(event, 'fs38', 79)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="f">map</span> <span onmouseout="hideTip(event, 'fs34', 81)" onmouseover="showTip(event, 'fs34', 81)" class="f">transform</span>
+</code></pre></td>
+</tr>
+</table>
+
+<p>But what if you want to uppercase many different fields? Just add a path 
+for each place you want to change with the corresponding function.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs41', 82)" onmouseover="showTip(event, 'fs41', 82)" class="i">ex3</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 83)" onmouseover="showTip(event, 'fs32', 83)" class="i">functionMap</span> <span class="o">=</span> [ [<span class="s">&quot;Names&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 84)" onmouseover="showTip(event, 'fs27', 84)" class="i">upperFunMapExpr</span>] 
+                        [<span class="s">&quot;Citizenships&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 85)" onmouseover="showTip(event, 'fs27', 85)" class="i">upperFunMapExpr</span>] 
+                        [<span class="s">&quot;Address&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 86)" onmouseover="showTip(event, 'fs27', 86)" class="i">upperFunMapExpr</span>] 
+                        [<span class="s">&quot;City&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 87)" onmouseover="showTip(event, 'fs27', 87)" class="i">upperFunMapExpr</span>] 
+                        [<span class="s">&quot;State&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 88)" onmouseover="showTip(event, 'fs27', 88)" class="i">upperFunMapExpr</span>] 
+                        [<span class="s">&quot;Country&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [<span onmouseout="hideTip(event, 'fs27', 89)" onmouseover="showTip(event, 'fs27', 89)" class="i">upperFunMapExpr</span>] 
+                      ] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 90)" onmouseover="showTip(event, 'fs22', 90)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 91)" onmouseover="showTip(event, 'fs33', 91)" class="f">ofList</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 92)" onmouseover="showTip(event, 'fs34', 92)" class="f">transform</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 93)" onmouseover="showTip(event, 'fs35', 93)" class="f">genrateRecordTransformFunction</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 94)" onmouseover="showTip(event, 'fs16', 94)" class="t">Person</span><span class="o">&gt;</span> (<span onmouseout="hideTip(event, 'fs36', 95)" onmouseover="showTip(event, 'fs36', 95)" class="t">FungibleCoreSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 96)" onmouseover="showTip(event, 'fs37', 96)" class="i">Default</span>) <span onmouseout="hideTip(event, 'fs32', 97)" onmouseover="showTip(event, 'fs32', 97)" class="i">functionMap</span>
+    <span onmouseout="hideTip(event, 'fs23', 98)" onmouseover="showTip(event, 'fs23', 98)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 99)" onmouseover="showTip(event, 'fs38', 99)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 100)" onmouseover="showTip(event, 'fs39', 100)" class="f">map</span> <span onmouseout="hideTip(event, 'fs34', 101)" onmouseover="showTip(event, 'fs34', 101)" class="f">transform</span>
+</code></pre></td>
+</tr>
+</table>
+
+<p>What if we want to apply multiple different transforms to the same field? Just list the transforms
+and they'll be executed in order.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs42', 102)" onmouseover="showTip(event, 'fs42', 102)" class="i">removeUpperVowelsExpr</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 103)" onmouseover="showTip(event, 'fs43', 103)" class="f">removeUpperVowels</span> (<span onmouseout="hideTip(event, 'fs29', 104)" onmouseover="showTip(event, 'fs29', 104)" class="i">s</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs11', 105)" onmouseover="showTip(event, 'fs11', 105)" class="t">string</span>) <span class="o">=</span>
+        <span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 106)" onmouseover="showTip(event, 'fs44', 106)" class="i">vowels</span> <span class="o">=</span> [|<span class="s">&#39;A&#39;</span>; <span class="s">&#39;E&#39;</span>; <span class="s">&#39;I&#39;</span>; <span class="s">&#39;O&#39;</span>; <span class="s">&#39;U&#39;</span>|] <span class="c">// TODO: Sometimes Y?</span>
+        <span onmouseout="hideTip(event, 'fs29', 107)" onmouseover="showTip(event, 'fs29', 107)" class="i">s</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs45', 108)" onmouseover="showTip(event, 'fs45', 108)" class="t">String</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="f">filter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs47', 110)" onmouseover="showTip(event, 'fs47', 110)" class="i">c</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs48', 111)" onmouseover="showTip(event, 'fs48', 111)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 112)" onmouseover="showTip(event, 'fs49', 112)" class="f">contains</span> <span onmouseout="hideTip(event, 'fs47', 113)" onmouseover="showTip(event, 'fs47', 113)" class="i">c</span> <span onmouseout="hideTip(event, 'fs44', 114)" onmouseover="showTip(event, 'fs44', 114)" class="i">vowels</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs50', 115)" onmouseover="showTip(event, 'fs50', 115)" class="f">not</span>)
+    &lt;@@ <span onmouseout="hideTip(event, 'fs43', 116)" onmouseover="showTip(event, 'fs43', 116)" class="f">removeUpperVowels</span> @@&gt; <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 117)" onmouseover="showTip(event, 'fs22', 117)" class="p">Map</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs51', 118)" onmouseover="showTip(event, 'fs51', 118)" class="i">ex4</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 119)" onmouseover="showTip(event, 'fs32', 119)" class="i">functionMap</span> <span class="o">=</span> [([<span class="s">&quot;City&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [ <span onmouseout="hideTip(event, 'fs27', 120)" onmouseover="showTip(event, 'fs27', 120)" class="i">upperFunMapExpr</span>; <span onmouseout="hideTip(event, 'fs42', 121)" onmouseover="showTip(event, 'fs42', 121)" class="i">removeUpperVowelsExpr</span> ])] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 122)" onmouseover="showTip(event, 'fs22', 122)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 123)" onmouseover="showTip(event, 'fs33', 123)" class="f">ofList</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 124)" onmouseover="showTip(event, 'fs34', 124)" class="f">transform</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 125)" onmouseover="showTip(event, 'fs35', 125)" class="f">genrateRecordTransformFunction</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 126)" onmouseover="showTip(event, 'fs16', 126)" class="t">Person</span><span class="o">&gt;</span> (<span onmouseout="hideTip(event, 'fs36', 127)" onmouseover="showTip(event, 'fs36', 127)" class="t">FungibleCoreSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 128)" onmouseover="showTip(event, 'fs37', 128)" class="i">Default</span>) <span onmouseout="hideTip(event, 'fs32', 129)" onmouseover="showTip(event, 'fs32', 129)" class="i">functionMap</span>
+    <span onmouseout="hideTip(event, 'fs23', 130)" onmouseover="showTip(event, 'fs23', 130)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 131)" onmouseover="showTip(event, 'fs38', 131)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 132)" onmouseover="showTip(event, 'fs39', 132)" class="f">map</span> <span onmouseout="hideTip(event, 'fs34', 133)" onmouseover="showTip(event, 'fs34', 133)" class="f">transform</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 134)" onmouseover="showTip(event, 'fs52', 134)" class="i">ex5</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs32', 135)" onmouseover="showTip(event, 'fs32', 135)" class="i">functionMap</span> <span class="o">=</span> [([<span class="s">&quot;City&quot;</span>; <span class="s">&quot;Locations&quot;</span>], [ <span onmouseout="hideTip(event, 'fs42', 136)" onmouseover="showTip(event, 'fs42', 136)" class="i">removeUpperVowelsExpr</span>; <span onmouseout="hideTip(event, 'fs27', 137)" onmouseover="showTip(event, 'fs27', 137)" class="i">upperFunMapExpr</span> ])] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs22', 138)" onmouseover="showTip(event, 'fs22', 138)" class="t">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 139)" onmouseover="showTip(event, 'fs33', 139)" class="f">ofList</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 140)" onmouseover="showTip(event, 'fs34', 140)" class="f">transform</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 141)" onmouseover="showTip(event, 'fs35', 141)" class="f">genrateRecordTransformFunction</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 142)" onmouseover="showTip(event, 'fs16', 142)" class="t">Person</span><span class="o">&gt;</span> (<span onmouseout="hideTip(event, 'fs36', 143)" onmouseover="showTip(event, 'fs36', 143)" class="t">FungibleCoreSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 144)" onmouseover="showTip(event, 'fs37', 144)" class="i">Default</span>) <span onmouseout="hideTip(event, 'fs32', 145)" onmouseover="showTip(event, 'fs32', 145)" class="i">functionMap</span>
+    <span onmouseout="hideTip(event, 'fs23', 146)" onmouseover="showTip(event, 'fs23', 146)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 147)" onmouseover="showTip(event, 'fs38', 147)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 148)" onmouseover="showTip(event, 'fs39', 148)" class="f">map</span> <span onmouseout="hideTip(event, 'fs34', 149)" onmouseover="showTip(event, 'fs34', 149)" class="f">transform</span>
+</code></pre></td>
+</tr>
+</table>
+
+<p>Let's dig into the static reflection part of the library, which is used
+for pulling functions in from F# libraries based on a settings spec.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 150)" onmouseover="showTip(event, 'fs1', 150)" class="i">Fungible</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 151)" onmouseover="showTip(event, 'fs53', 151)" class="i">StaticReflection</span>
+
+<span class="k">module</span> <span class="t">TestFunctions</span> <span class="o">=</span> 
+    <span class="k">open</span> <span onmouseout="hideTip(event, 'fs54', 152)" onmouseover="showTip(event, 'fs54', 152)" class="i">System</span>
+    <span class="k">open</span> <span onmouseout="hideTip(event, 'fs54', 153)" onmouseover="showTip(event, 'fs54', 153)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 154)" onmouseover="showTip(event, 'fs55', 154)" class="i">Text</span>
+    <span class="k">open</span> <span onmouseout="hideTip(event, 'fs54', 155)" onmouseover="showTip(event, 'fs54', 155)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 156)" onmouseover="showTip(event, 'fs56', 156)" class="i">ComponentModel</span>
+
+    <span class="k">type</span> <span class="k">internal</span> <span onmouseout="hideTip(event, 'fs57', 157)" onmouseover="showTip(event, 'fs57', 157)" class="t">Marker</span> <span class="o">=</span> <span class="k">interface</span> <span class="k">end</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs58', 158)" onmouseover="showTip(event, 'fs58', 158)" class="i">ModuleType</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs59', 159)" onmouseover="showTip(event, 'fs59', 159)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs57', 160)" onmouseover="showTip(event, 'fs57', 160)" class="t">Marker</span><span class="o">&gt;</span><span class="o">.</span><span class="i">DeclaringType</span>
+
+    [&lt;<span onmouseout="hideTip(event, 'fs60', 161)" onmouseover="showTip(event, 'fs60', 161)" class="t">TransformFunctionType</span>(<span class="s">&quot;Map&quot;</span>)&gt;]
+    [&lt;<span onmouseout="hideTip(event, 'fs61', 162)" onmouseover="showTip(event, 'fs61', 162)" class="t">Description</span>(<span class="s">&quot;Removes the specified characters from the given string&quot;</span>)&gt;]
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs62', 163)" onmouseover="showTip(event, 'fs62', 163)" class="f">removeCharacters</span> (<span onmouseout="hideTip(event, 'fs63', 164)" onmouseover="showTip(event, 'fs63', 164)" class="i">toRemove</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs64', 165)" onmouseover="showTip(event, 'fs64', 165)" class="t">char</span> []) (<span onmouseout="hideTip(event, 'fs65', 166)" onmouseover="showTip(event, 'fs65', 166)" class="i">inStr</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs66', 167)" onmouseover="showTip(event, 'fs66', 167)" class="t">string</span>) <span class="o">=</span>    
+        <span class="k">let</span> <span onmouseout="hideTip(event, 'fs67', 168)" onmouseover="showTip(event, 'fs67', 168)" class="i">sb</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs68', 169)" onmouseover="showTip(event, 'fs68', 169)" class="t">StringBuilder</span>()
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs47', 170)" onmouseover="showTip(event, 'fs47', 170)" class="i">c</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs65', 171)" onmouseover="showTip(event, 'fs65', 171)" class="i">inStr</span> <span class="k">do</span>            
+            <span class="k">if</span> <span onmouseout="hideTip(event, 'fs69', 172)" onmouseover="showTip(event, 'fs69', 172)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 173)" onmouseover="showTip(event, 'fs70', 173)" class="f">IndexOf</span>(<span onmouseout="hideTip(event, 'fs63', 174)" onmouseover="showTip(event, 'fs63', 174)" class="i">toRemove</span>, <span onmouseout="hideTip(event, 'fs47', 175)" onmouseover="showTip(event, 'fs47', 175)" class="i">c</span>) <span class="o">=</span> <span class="o">-</span><span class="n">1</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs67', 176)" onmouseover="showTip(event, 'fs67', 176)" class="i">sb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 177)" onmouseover="showTip(event, 'fs71', 177)" class="f">Append</span>(<span onmouseout="hideTip(event, 'fs47', 178)" onmouseover="showTip(event, 'fs47', 178)" class="i">c</span>) <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs72', 179)" onmouseover="showTip(event, 'fs72', 179)" class="f">ignore</span>
+        <span onmouseout="hideTip(event, 'fs67', 180)" onmouseover="showTip(event, 'fs67', 180)" class="i">sb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 181)" onmouseover="showTip(event, 'fs73', 181)" class="f">ToString</span>()   
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs74', 182)" onmouseover="showTip(event, 'fs74', 182)" class="i">ex6_staticTransforms</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs75', 183)" onmouseover="showTip(event, 'fs75', 183)" class="i">settings</span> <span class="o">=</span>  [| { <span class="i">TargetPath</span> <span class="o">=</span> <span class="s">&quot;Names&quot;</span>; 
+                         <span class="i">FunctionName</span> <span class="o">=</span> <span class="s">&quot;removeCharacters&quot;</span>; 
+                         <span class="i">FunctionArgs</span> <span class="o">=</span> [| <span class="s">&quot;R&quot;</span>; <span class="s">&quot;r&quot;</span> |] } |]
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs76', 184)" onmouseover="showTip(event, 'fs76', 184)" class="i">propertyMap</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs77', 185)" onmouseover="showTip(event, 'fs77', 185)" class="f">getPathsAndTypes</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 186)" onmouseover="showTip(event, 'fs16', 186)" class="t">Person</span><span class="o">&gt;</span>()
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs78', 187)" onmouseover="showTip(event, 'fs78', 187)" class="f">generator</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs79', 188)" onmouseover="showTip(event, 'fs79', 188)" class="f">generateTransform</span> <span onmouseout="hideTip(event, 'fs80', 189)" onmouseover="showTip(event, 'fs80', 189)" class="t">TestFunctions</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 190)" onmouseover="showTip(event, 'fs81', 190)" class="i">ModuleType</span> <span onmouseout="hideTip(event, 'fs76', 191)" onmouseover="showTip(event, 'fs76', 191)" class="i">propertyMap</span>
+    <span onmouseout="hideTip(event, 'fs75', 192)" onmouseover="showTip(event, 'fs75', 192)" class="i">settings</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs48', 193)" onmouseover="showTip(event, 'fs48', 193)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 194)" onmouseover="showTip(event, 'fs82', 194)" class="f">map</span> <span onmouseout="hideTip(event, 'fs78', 195)" onmouseover="showTip(event, 'fs78', 195)" class="f">generator</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs83', 196)" onmouseover="showTip(event, 'fs83', 196)" class="i">ex6</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs84', 197)" onmouseover="showTip(event, 'fs84', 197)" class="f">compiledTransforms</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs85', 198)" onmouseover="showTip(event, 'fs85', 198)" class="f">compileTransforms</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 199)" onmouseover="showTip(event, 'fs16', 199)" class="t">Person</span>, <span onmouseout="hideTip(event, 'fs16', 200)" onmouseover="showTip(event, 'fs16', 200)" class="t">Person</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs74', 201)" onmouseover="showTip(event, 'fs74', 201)" class="i">ex6_staticTransforms</span>
+    <span onmouseout="hideTip(event, 'fs23', 202)" onmouseover="showTip(event, 'fs23', 202)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 203)" onmouseover="showTip(event, 'fs38', 203)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 204)" onmouseover="showTip(event, 'fs39', 204)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs86', 205)" onmouseover="showTip(event, 'fs86', 205)" class="i">p</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs84', 206)" onmouseover="showTip(event, 'fs84', 206)" class="f">compiledTransforms</span> <span onmouseout="hideTip(event, 'fs86', 207)" onmouseover="showTip(event, 'fs86', 207)" class="i">p</span> <span onmouseout="hideTip(event, 'fs86', 208)" onmouseover="showTip(event, 'fs86', 208)" class="i">p</span>)
+</code></pre></td>
+</tr>
+</table>
+
+<p>Next let's explore using Barb functions with the Barb extension library.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs87', 209)" onmouseover="showTip(event, 'fs87', 209)" class="i">Barb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs88', 210)" onmouseover="showTip(event, 'fs88', 210)" class="i">Representation</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 211)" onmouseover="showTip(event, 'fs1', 211)" class="i">Fungible</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 212)" onmouseover="showTip(event, 'fs89', 212)" class="i">Barb</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs90', 213)" onmouseover="showTip(event, 'fs90', 213)" class="i">ex7_barbTransforms</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs91', 214)" onmouseover="showTip(event, 'fs91', 214)" class="i">barbSettings</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs92', 215)" onmouseover="showTip(event, 'fs92', 215)" class="t">BarbSettings</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs93', 216)" onmouseover="showTip(event, 'fs93', 216)" class="i">Default</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs94', 217)" onmouseover="showTip(event, 'fs94', 217)" class="i">barbDefs</span> <span class="o">=</span> [| { <span class="i">TargetPath</span> <span class="o">=</span> <span class="s">&quot;Names&quot;</span>
+                        <span class="i">Kind</span> <span class="o">=</span> <span class="s">&quot;Map&quot;</span>
+                        <span onmouseout="hideTip(event, 'fs95', 218)" onmouseover="showTip(event, 'fs95', 218)" class="i">Function</span> <span class="o">=</span> <span class="s">&quot;Value.ToLower()&quot;</span> } |]
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs76', 219)" onmouseover="showTip(event, 'fs76', 219)" class="i">propertyMap</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs77', 220)" onmouseover="showTip(event, 'fs77', 220)" class="f">getPathsAndTypes</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 221)" onmouseover="showTip(event, 'fs16', 221)" class="t">Person</span><span class="o">&gt;</span>()
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs96', 222)" onmouseover="showTip(event, 'fs96', 222)" class="f">generator</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs97', 223)" onmouseover="showTip(event, 'fs97', 223)" class="f">generateBarbTransform</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 224)" onmouseover="showTip(event, 'fs16', 224)" class="t">Person</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs91', 225)" onmouseover="showTip(event, 'fs91', 225)" class="i">barbSettings</span> <span onmouseout="hideTip(event, 'fs76', 226)" onmouseover="showTip(event, 'fs76', 226)" class="i">propertyMap</span>
+    <span onmouseout="hideTip(event, 'fs94', 227)" onmouseover="showTip(event, 'fs94', 227)" class="i">barbDefs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs48', 228)" onmouseover="showTip(event, 'fs48', 228)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 229)" onmouseover="showTip(event, 'fs82', 229)" class="f">map</span> <span onmouseout="hideTip(event, 'fs96', 230)" onmouseover="showTip(event, 'fs96', 230)" class="f">generator</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs98', 231)" onmouseover="showTip(event, 'fs98', 231)" class="i">ex7</span> <span class="o">=</span>  
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs84', 232)" onmouseover="showTip(event, 'fs84', 232)" class="f">compiledTransforms</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs85', 233)" onmouseover="showTip(event, 'fs85', 233)" class="f">compileTransforms</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 234)" onmouseover="showTip(event, 'fs16', 234)" class="t">Person</span>, <span onmouseout="hideTip(event, 'fs16', 235)" onmouseover="showTip(event, 'fs16', 235)" class="t">Person</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs90', 236)" onmouseover="showTip(event, 'fs90', 236)" class="i">ex7_barbTransforms</span>
+    <span onmouseout="hideTip(event, 'fs23', 237)" onmouseover="showTip(event, 'fs23', 237)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 238)" onmouseover="showTip(event, 'fs38', 238)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 239)" onmouseover="showTip(event, 'fs39', 239)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs86', 240)" onmouseover="showTip(event, 'fs86', 240)" class="i">p</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs84', 241)" onmouseover="showTip(event, 'fs84', 241)" class="f">compiledTransforms</span> <span onmouseout="hideTip(event, 'fs86', 242)" onmouseover="showTip(event, 'fs86', 242)" class="i">p</span> <span onmouseout="hideTip(event, 'fs86', 243)" onmouseover="showTip(event, 'fs86', 243)" class="i">p</span>)
+</code></pre></td>
+</tr>
+</table>
+
+<p>You can mix Barb and Static Reflection transforms interchangeably.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs99', 244)" onmouseover="showTip(event, 'fs99', 244)" class="i">ex8</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs100', 245)" onmouseover="showTip(event, 'fs100', 245)" class="i">mixedTransforms</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs48', 246)" onmouseover="showTip(event, 'fs48', 246)" class="t">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs101', 247)" onmouseover="showTip(event, 'fs101', 247)" class="f">append</span> <span onmouseout="hideTip(event, 'fs90', 248)" onmouseover="showTip(event, 'fs90', 248)" class="i">ex7_barbTransforms</span> <span onmouseout="hideTip(event, 'fs74', 249)" onmouseover="showTip(event, 'fs74', 249)" class="i">ex6_staticTransforms</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs84', 250)" onmouseover="showTip(event, 'fs84', 250)" class="f">compiledTransforms</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs85', 251)" onmouseover="showTip(event, 'fs85', 251)" class="f">compileTransforms</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs16', 252)" onmouseover="showTip(event, 'fs16', 252)" class="t">Person</span>, <span onmouseout="hideTip(event, 'fs16', 253)" onmouseover="showTip(event, 'fs16', 253)" class="t">Person</span><span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs100', 254)" onmouseover="showTip(event, 'fs100', 254)" class="i">mixedTransforms</span>
+    <span onmouseout="hideTip(event, 'fs23', 255)" onmouseover="showTip(event, 'fs23', 255)" class="i">testPersons</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs38', 256)" onmouseover="showTip(event, 'fs38', 256)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 257)" onmouseover="showTip(event, 'fs39', 257)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs86', 258)" onmouseover="showTip(event, 'fs86', 258)" class="i">p</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs84', 259)" onmouseover="showTip(event, 'fs84', 259)" class="f">compiledTransforms</span> <span onmouseout="hideTip(event, 'fs86', 260)" onmouseover="showTip(event, 'fs86', 260)" class="i">p</span> <span onmouseout="hideTip(event, 'fs86', 261)" onmouseover="showTip(event, 'fs86', 261)" class="i">p</span>)
+</code></pre></td>
+</tr>
+</table>
 
 <div class="tip" id="fs1">namespace Fungible</div>
+<div class="tip" id="fs2">module Core<br /><br />from Fungible</div>
+<div class="tip" id="fs3">type Date =<br />&#160;&#160;{Day: byte;<br />&#160;&#160;&#160;Month: byte;<br />&#160;&#160;&#160;Year: uint16;}<br /><br />Full name: Tutorial.Date</div>
+<div class="tip" id="fs4">Date.Day: byte</div>
+<div class="tip" id="fs5">Multiple items<br />val byte : value:&#39;T -&gt; byte (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.byte<br /><br />--------------------<br />type byte = System.Byte<br /><br />Full name: Microsoft.FSharp.Core.byte</div>
+<div class="tip" id="fs6">Date.Month: byte</div>
+<div class="tip" id="fs7">Date.Year: uint16</div>
+<div class="tip" id="fs8">Multiple items<br />val uint16 : value:&#39;T -&gt; uint16 (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.uint16<br /><br />--------------------<br />type uint16 = System.UInt16<br /><br />Full name: Microsoft.FSharp.Core.uint16</div>
+<div class="tip" id="fs9">type Location =<br />&#160;&#160;{Address: string option;<br />&#160;&#160;&#160;City: string option;<br />&#160;&#160;&#160;State: string option;<br />&#160;&#160;&#160;Country: string option;}<br /><br />Full name: Tutorial.Location</div>
+<div class="tip" id="fs10">Location.Address: string option</div>
+<div class="tip" id="fs11">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = System.String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs12">type &#39;T option = Option&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.option&lt;_&gt;</div>
+<div class="tip" id="fs13">Location.City: string option</div>
+<div class="tip" id="fs14">Location.State: string option</div>
+<div class="tip" id="fs15">Location.Country: string option</div>
+<div class="tip" id="fs16">type Person =<br />&#160;&#160;{Names: string [];<br />&#160;&#160;&#160;DOBs: Date [];<br />&#160;&#160;&#160;Citizenships: string [];<br />&#160;&#160;&#160;Locations: Location [];<br />&#160;&#160;&#160;Fields: Map&lt;string,string&gt;;}<br /><br />Full name: Tutorial.Person</div>
+<div class="tip" id="fs17">Person.Names: string []</div>
+<div class="tip" id="fs18">Person.DOBs: Date []</div>
+<div class="tip" id="fs19">Person.Citizenships: string []</div>
+<div class="tip" id="fs20">Person.Locations: Location []</div>
+<div class="tip" id="fs21">Person.Fields: Map&lt;string,string&gt;</div>
+<div class="tip" id="fs22">Multiple items<br />union case FieldAction.Map: Quotations.Expr -&gt; FieldAction<br /><br />--------------------<br />module Map<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type Map&lt;&#39;Key,&#39;Value (requires comparison)&gt; =<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IComparable<br />&#160;&#160;interface IEnumerable&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface ICollection&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface IDictionary&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member Add : key:&#39;Key * value:&#39;Value -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member ContainsKey : key:&#39;Key -&gt; bool<br />&#160;&#160;override Equals : obj -&gt; bool<br />&#160;&#160;member Remove : key:&#39;Key -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Collections.Map&lt;_,_&gt;<br /><br />--------------------<br />new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;</div>
+<div class="tip" id="fs23">val testPersons : Person list<br /><br />Full name: Tutorial.testPersons</div>
+<div class="tip" id="fs24">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs25">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs26">val empty&lt;&#39;Key,&#39;T (requires comparison)&gt; : Map&lt;&#39;Key,&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Map.empty</div>
+<div class="tip" id="fs27">val upperFunMapExpr : FieldAction<br /><br />Full name: Tutorial.upperFunMapExpr</div>
+<div class="tip" id="fs28">val upperFun : (string -&gt; string)</div>
+<div class="tip" id="fs29">val s : string</div>
+<div class="tip" id="fs30">System.String.ToUpper() : string<br />System.String.ToUpper(culture: System.Globalization.CultureInfo) : string</div>
+<div class="tip" id="fs31">val ex1 : Person list<br /><br />Full name: Tutorial.ex1</div>
+<div class="tip" id="fs32">val functionMap : Map&lt;string list,FieldAction list&gt;</div>
+<div class="tip" id="fs33">val ofList : elements:(&#39;Key * &#39;T) list -&gt; Map&lt;&#39;Key,&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Map.ofList</div>
+<div class="tip" id="fs34">val transform : (Person -&gt; Person)</div>
+<div class="tip" id="fs35">val genrateRecordTransformFunction : settings:FungibleCoreSettings -&gt; updaters:FieldUpdaters -&gt; (&#39;T -&gt; &#39;T)<br /><br />Full name: Fungible.Core.genrateRecordTransformFunction</div>
+<div class="tip" id="fs36">type FungibleCoreSettings =<br />&#160;&#160;{CloneWhenNoChanges: bool;<br />&#160;&#160;&#160;FailOnUnsupportedType: bool;}<br />&#160;&#160;static member Default : FungibleCoreSettings<br /><br />Full name: Fungible.Core.FungibleCoreSettings</div>
+<div class="tip" id="fs37">property FungibleCoreSettings.Default: FungibleCoreSettings</div>
+<div class="tip" id="fs38">Multiple items<br />module List<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =<br />&#160;&#160;| ( [] )<br />&#160;&#160;| ( :: ) of Head: &#39;T * Tail: &#39;T list<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IEnumerable&lt;&#39;T&gt;<br />&#160;&#160;member GetSlice : startIndex:int option * endIndex:int option -&gt; &#39;T list<br />&#160;&#160;member Head : &#39;T<br />&#160;&#160;member IsEmpty : bool<br />&#160;&#160;member Item : index:int -&gt; &#39;T with get<br />&#160;&#160;member Length : int<br />&#160;&#160;member Tail : &#39;T list<br />&#160;&#160;static member Cons : head:&#39;T * tail:&#39;T list -&gt; &#39;T list<br />&#160;&#160;static member Empty : &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List&lt;_&gt;</div>
+<div class="tip" id="fs39">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; list:&#39;T list -&gt; &#39;U list<br /><br />Full name: Microsoft.FSharp.Collections.List.map</div>
+<div class="tip" id="fs40">val ex2 : Person list<br /><br />Full name: Tutorial.ex2</div>
+<div class="tip" id="fs41">val ex3 : Person list<br /><br />Full name: Tutorial.ex3</div>
+<div class="tip" id="fs42">val removeUpperVowelsExpr : FieldAction<br /><br />Full name: Tutorial.removeUpperVowelsExpr</div>
+<div class="tip" id="fs43">val removeUpperVowels : (string -&gt; string)</div>
+<div class="tip" id="fs44">val vowels : char []</div>
+<div class="tip" id="fs45">module String<br /><br />from Microsoft.FSharp.Core</div>
+<div class="tip" id="fs46">val filter : predicate:(char -&gt; bool) -&gt; str:string -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.String.filter</div>
+<div class="tip" id="fs47">val c : char</div>
+<div class="tip" id="fs48">module Array<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs49">val contains : value:&#39;T -&gt; array:&#39;T [] -&gt; bool (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Array.contains</div>
+<div class="tip" id="fs50">val not : value:bool -&gt; bool<br /><br />Full name: Microsoft.FSharp.Core.Operators.not</div>
+<div class="tip" id="fs51">val ex4 : Person list<br /><br />Full name: Tutorial.ex4</div>
+<div class="tip" id="fs52">val ex5 : Person list<br /><br />Full name: Tutorial.ex5</div>
+<div class="tip" id="fs53">module StaticReflection<br /><br />from Fungible</div>
+<div class="tip" id="fs54">namespace System</div>
+<div class="tip" id="fs55">namespace System.Text</div>
+<div class="tip" id="fs56">namespace System.ComponentModel</div>
+<div class="tip" id="fs57">type internal Marker<br /><br />Full name: Tutorial.TestFunctions.Marker</div>
+<div class="tip" id="fs58">val ModuleType : Type<br /><br />Full name: Tutorial.TestFunctions.ModuleType</div>
+<div class="tip" id="fs59">val typeof&lt;&#39;T&gt; : Type<br /><br />Full name: Microsoft.FSharp.Core.Operators.typeof</div>
+<div class="tip" id="fs60">Multiple items<br />type TransformFunctionTypeAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : ftype:String -&gt; TransformFunctionTypeAttribute<br />&#160;&#160;member Type : String<br />&#160;&#160;member Type : String with set<br /><br />Full name: Fungible.StaticReflection.TransformFunctionTypeAttribute<br /><br />--------------------<br />new : ftype:String -&gt; TransformFunctionTypeAttribute</div>
+<div class="tip" id="fs61">Multiple items<br />type DescriptionAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : unit -&gt; DescriptionAttribute + 1 overload<br />&#160;&#160;member Description : string<br />&#160;&#160;member Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;member IsDefaultAttribute : unit -&gt; bool<br />&#160;&#160;static val Default : DescriptionAttribute<br /><br />Full name: System.ComponentModel.DescriptionAttribute<br /><br />--------------------<br />DescriptionAttribute() : unit<br />DescriptionAttribute(description: string) : unit</div>
+<div class="tip" id="fs62">val removeCharacters : toRemove:char [] -&gt; inStr:string -&gt; string<br /><br />Full name: Tutorial.TestFunctions.removeCharacters</div>
+<div class="tip" id="fs63">val toRemove : char []</div>
+<div class="tip" id="fs64">Multiple items<br />val char : value:&#39;T -&gt; char (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.char<br /><br />--------------------<br />type char = Char<br /><br />Full name: Microsoft.FSharp.Core.char</div>
+<div class="tip" id="fs65">val inStr : string</div>
+<div class="tip" id="fs66">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs67">val sb : StringBuilder</div>
+<div class="tip" id="fs68">Multiple items<br />type StringBuilder =<br />&#160;&#160;new : unit -&gt; StringBuilder + 5 overloads<br />&#160;&#160;member Append : value:string -&gt; StringBuilder + 18 overloads<br />&#160;&#160;member AppendFormat : format:string * arg0:obj -&gt; StringBuilder + 4 overloads<br />&#160;&#160;member AppendLine : unit -&gt; StringBuilder + 1 overload<br />&#160;&#160;member Capacity : int with get, set<br />&#160;&#160;member Chars : int -&gt; char with get, set<br />&#160;&#160;member Clear : unit -&gt; StringBuilder<br />&#160;&#160;member CopyTo : sourceIndex:int * destination:char[] * destinationIndex:int * count:int -&gt; unit<br />&#160;&#160;member EnsureCapacity : capacity:int -&gt; int<br />&#160;&#160;member Equals : sb:StringBuilder -&gt; bool<br />&#160;&#160;...<br /><br />Full name: System.Text.StringBuilder<br /><br />--------------------<br />StringBuilder() : unit<br />StringBuilder(capacity: int) : unit<br />StringBuilder(value: string) : unit<br />StringBuilder(value: string, capacity: int) : unit<br />StringBuilder(capacity: int, maxCapacity: int) : unit<br />StringBuilder(value: string, startIndex: int, length: int, capacity: int) : unit</div>
+<div class="tip" id="fs69">type Array =<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CopyTo : array:Array * index:int -&gt; unit + 1 overload<br />&#160;&#160;member GetEnumerator : unit -&gt; IEnumerator<br />&#160;&#160;member GetLength : dimension:int -&gt; int<br />&#160;&#160;member GetLongLength : dimension:int -&gt; int64<br />&#160;&#160;member GetLowerBound : dimension:int -&gt; int<br />&#160;&#160;member GetUpperBound : dimension:int -&gt; int<br />&#160;&#160;member GetValue : [&lt;ParamArray&gt;] indices:int[] -&gt; obj + 7 overloads<br />&#160;&#160;member Initialize : unit -&gt; unit<br />&#160;&#160;member IsFixedSize : bool<br />&#160;&#160;...<br /><br />Full name: System.Array</div>
+<div class="tip" id="fs70">Array.IndexOf&lt;&#39;T&gt;(array: &#39;T [], value: &#39;T) : int<br />Array.IndexOf(array: Array, value: obj) : int<br />Array.IndexOf&lt;&#39;T&gt;(array: &#39;T [], value: &#39;T, startIndex: int) : int<br />Array.IndexOf(array: Array, value: obj, startIndex: int) : int<br />Array.IndexOf&lt;&#39;T&gt;(array: &#39;T [], value: &#39;T, startIndex: int, count: int) : int<br />Array.IndexOf(array: Array, value: obj, startIndex: int, count: int) : int</div>
+<div class="tip" id="fs71">StringBuilder.Append(value: char []) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: obj) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: uint64) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: uint32) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: uint16) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: decimal) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: float) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: float32) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: int64) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />StringBuilder.Append(value: int) : StringBuilder<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs72">val ignore : value:&#39;T -&gt; unit<br /><br />Full name: Microsoft.FSharp.Core.Operators.ignore</div>
+<div class="tip" id="fs73">StringBuilder.ToString() : string<br />StringBuilder.ToString(startIndex: int, length: int) : string</div>
+<div class="tip" id="fs74">val ex6_staticTransforms : Transform []<br /><br />Full name: Tutorial.ex6_staticTransforms</div>
+<div class="tip" id="fs75">val settings : TransformDefinition []</div>
+<div class="tip" id="fs76">val propertyMap : Map&lt;string list,System.Type&gt;</div>
+<div class="tip" id="fs77">val getPathsAndTypes&lt;&#39;t&gt; : unit -&gt; Map&lt;string list,System.Type&gt;<br /><br />Full name: Fungible.Core.getPathsAndTypes</div>
+<div class="tip" id="fs78">val generator : (TransformDefinition -&gt; Transform)</div>
+<div class="tip" id="fs79">val generateTransform&lt;&#39;U&gt; : functionModule:System.Type -&gt; propertyMap:Map&lt;string list,System.Type&gt; -&gt; basic:TransformDefinition -&gt; Transform<br /><br />Full name: Fungible.StaticReflection.generateTransform</div>
+<div class="tip" id="fs80">module TestFunctions<br /><br />from Tutorial</div>
+<div class="tip" id="fs81">val ModuleType : System.Type<br /><br />Full name: Tutorial.TestFunctions.ModuleType</div>
+<div class="tip" id="fs82">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; array:&#39;T [] -&gt; &#39;U []<br /><br />Full name: Microsoft.FSharp.Collections.Array.map</div>
+<div class="tip" id="fs83">val ex6 : Person list<br /><br />Full name: Tutorial.ex6</div>
+<div class="tip" id="fs84">val compiledTransforms : (Person -&gt; Person -&gt; Person)</div>
+<div class="tip" id="fs85">val compileTransforms : transforms:seq&lt;Transform&gt; -&gt; (&#39;U -&gt; &#39;T -&gt; &#39;T)<br /><br />Full name: Fungible.StaticReflection.compileTransforms</div>
+<div class="tip" id="fs86">val p : Person</div>
+<div class="tip" id="fs87">Multiple items<br />module Barb<br /><br />from Fungible<br /><br />--------------------<br />namespace Barb</div>
+<div class="tip" id="fs88">module Representation<br /><br />from Barb</div>
+<div class="tip" id="fs89">module Barb<br /><br />from Fungible</div>
+<div class="tip" id="fs90">val ex7_barbTransforms : (string list * FieldAction) []<br /><br />Full name: Tutorial.ex7_barbTransforms</div>
+<div class="tip" id="fs91">val barbSettings : BarbSettings</div>
+<div class="tip" id="fs92">type BarbSettings =<br />&#160;&#160;{BindGlobalsWhenReducing: bool;<br />&#160;&#160;&#160;FailOnCatchAll: bool;<br />&#160;&#160;&#160;Namespaces: Set&lt;string&gt;;<br />&#160;&#160;&#160;AdditionalBindings: IDictionary&lt;string,obj&gt;;}<br />&#160;&#160;static member Default : BarbSettings<br /><br />Full name: Barb.Representation.BarbSettings</div>
+<div class="tip" id="fs93">property BarbSettings.Default: BarbSettings</div>
+<div class="tip" id="fs94">val barbDefs : BarbTransformDefinition []</div>
+<div class="tip" id="fs95">union case FieldAction.Function: Quotations.Expr -&gt; FieldAction</div>
+<div class="tip" id="fs96">val generator : (BarbTransformDefinition -&gt; string list * FieldAction)</div>
+<div class="tip" id="fs97">val generateBarbTransform&lt;&#39;U&gt; : barbSettings:BarbSettings -&gt; propertyMap:Map&lt;string list,System.Type&gt; -&gt; transformDef:BarbTransformDefinition -&gt; string list * FieldAction<br /><br />Full name: Fungible.Barb.generateBarbTransform</div>
+<div class="tip" id="fs98">val ex7 : Person list<br /><br />Full name: Tutorial.ex7</div>
+<div class="tip" id="fs99">val ex8 : Person list<br /><br />Full name: Tutorial.ex8</div>
+<div class="tip" id="fs100">val mixedTransforms : (string list * FieldAction) []</div>
+<div class="tip" id="fs101">val append : array1:&#39;T [] -&gt; array2:&#39;T [] -&gt; &#39;T []<br /><br />Full name: Microsoft.FSharp.Collections.Array.append</div>
 
         </div>
         <div class="span3">

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>Core - Fungible</title>
+    <title>TransformFunctionTypeAttribute - Fungible</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content="Rick Minerich"/>
@@ -35,133 +35,82 @@
 
 
 
-<h1>Core</h1>
+<h1>TransformFunctionTypeAttribute</h1>
 <p>
   <span>Namespace: Fungible</span><br />
+  <span>Parent Module: <a href="fungible-staticreflection.html">StaticReflection</a></span>
 </p>
 <div class="xmldoc">
+<p>Used to tag F# functions with the kind of transform they represent</p>
+
+
 </div>
-
-<!-- Render nested types and modules, if there are any -->
-  <h2>Nested types and modules</h2>
-  <div>
-      <table class="table table-bordered type-list">
-    <thead>
-      <tr><td>Type</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="type-name">
-            <a href="fungible-core-fieldaction.html">FieldAction</a>
-          </td>
-          <td class="xmldoc"><p>A wrapper to annotate transform expressions with the kind of transform they are</p>
-
-
-</td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fungible-core-fieldupdaters.html">FieldUpdaters</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fungible-core-fungiblecoresettings.html">FungibleCoreSettings</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-    </tbody>
-  </table>
-  <table class="table table-bordered module-list">
-    <thead>
-      <tr><td>Module</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td class="module-name">
-            <a href="fungible-core-collectionhelpers.html">CollectionHelpers</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="module-name">
-            <a href="fungible-core-exprhelpers.html">ExprHelpers</a>
-          </td>
-          <td class="xmldoc"></td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-  <h3>Functions and values</h3>
+  <h3>Constructors</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Function or value</td><td>Description</td></tr>
+      <tr><td>Constructor</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '1', 1)" onmouseover="showTip(event, '1', 1)">
-            genrateRecordTransformFunction (...)
+          <code onmouseout="hideTip(event, '41', 41)" onmouseover="showTip(event, '41', 41)">
+            new(ftype)
           </code>
-          <div class="tip" id="1">
-            <strong>Signature:</strong> settings:FungibleCoreSettings -&gt; updaters:FieldUpdaters -&gt; &#39;T -&gt; &#39;T<br />
-                          <strong>Type parameters:</strong> 'T          </div>
+          <div class="tip" id="41">
+            <strong>Signature:</strong> ftype:String -&gt; TransformFunctionTypeAttribute<br />
+                      </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L400-400" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L18-18" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Given a collection of FieldUpdater transform produces a function which applies them to a F# type tree</p>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Instance members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Instance member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
 
-
-
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+            Type()
+          </code>
+          <div class="tip" id="42">
+            <strong>Signature:</strong> unit -&gt; String<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L20-20" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '2', 2)" onmouseover="showTip(event, '2', 2)">
-            genrateRecordTransformFunctionWithArgs (...)
+          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
+            Type()
           </code>
-          <div class="tip" id="2">
-            <strong>Signature:</strong> settings:FungibleCoreSettings -&gt; replacmentVarName:string -&gt; funcs:FieldUpdaters -&gt; &#39;U -&gt; &#39;T -&gt; &#39;T<br />
-                          <strong>Type parameters:</strong> 'U, 'T          </div>
+          <div class="tip" id="43">
+            <strong>Signature:</strong> unit -&gt; unit<br />
+                      </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L413-413" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L20-20" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Like genrateRecordTransformFunction but allows the user to specify an additional argument</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '3', 3)" onmouseover="showTip(event, '3', 3)">
-            getPathsAndTypes ()
-          </code>
-          <div class="tip" id="3">
-            <strong>Signature:</strong> unit -&gt; Map&lt;string list,Type&gt;<br />
-                          <strong>Type parameters:</strong> 't          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L435-435" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Returns a map of the valid paths with type for a given input type.</p>
-
-
-
+          
         </td>
       </tr>
     </tbody>

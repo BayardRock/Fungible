@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>ExprHelpers - Fungible</title>
+    <title>StaticReflection - Fungible</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content="Rick Minerich"/>
@@ -35,15 +35,65 @@
 
 
 
-<h1>ExprHelpers</h1>
+<h1>StaticReflection</h1>
 <p>
   <span>Namespace: Fungible</span><br />
-  <span>Parent Module: <a href="fungible-core.html">Core</a></span>
 </p>
 <div class="xmldoc">
 </div>
 
 <!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="fungible-staticreflection-transform.html">Transform</a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fungible-staticreflection-transformdefinition.html">TransformDefinition</a>
+          </td>
+          <td class="xmldoc"><p>The definition of an F# cleaner function</p>
+
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fungible-staticreflection-transformfunctiontypeattribute.html">TransformFunctionTypeAttribute</a>
+          </td>
+          <td class="xmldoc"><p>Used to tag F# functions with the kind of transform they represent</p>
+
+
+</td>
+        </tr>
+    </tbody>
+  </table>
+  <table class="table table-bordered module-list">
+    <thead>
+      <tr><td>Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="module-name">
+            <a href="fungible-staticreflection-types.html">Types</a>
+          </td>
+          <td class="xmldoc"><p>Semi-internal machinery used for figuring out information about input types</p>
+
+
+</td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
 
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -54,19 +104,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '6', 6)" onmouseover="showTip(event, '6', 6)">
-            application prms expr
+          <code onmouseout="hideTip(event, '12', 12)" onmouseover="showTip(event, '12', 12)">
+            compileTransforms transforms
           </code>
-          <div class="tip" id="6">
-            <strong>Signature:</strong> prms:Expr -&gt; expr:Expr -&gt; Expr<br />
-                      </div>
+          <div class="tip" id="12">
+            <strong>Signature:</strong> transforms:seq&lt;Transform&gt; -&gt; &#39;U -&gt; &#39;T -&gt; &#39;T<br />
+                          <strong>Type parameters:</strong> 'U, 'T          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L48-48" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L189-189" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Shortcut for Expr.Application</p>
+          <p>Takes a set of transforms and compiles them into a function that does all of the given transforms to the data tree</p>
 
 
 
@@ -75,19 +125,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '7', 7)" onmouseover="showTip(event, '7', 7)">
-            call meth args
+          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
+            GatherAllDataTransforms moduleType
           </code>
-          <div class="tip" id="7">
-            <strong>Signature:</strong> meth:MethodInfo -&gt; args:Expr list -&gt; Expr<br />
+          <div class="tip" id="13">
+            <strong>Signature:</strong> moduleType:Type -&gt; (TransformFunctionTypeAttribute * MethodInfo) []<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L54-54" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L49-49" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Shortcut for Expr.Call</p>
+          <p>Gets all data transforms that are marked with a CleaningFunctionTypeAttribute in the given module</p>
 
 
 
@@ -96,19 +146,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '8', 8)" onmouseover="showTip(event, '8', 8)">
-            coerse typ expr
+          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
+            generateTransform (...)
           </code>
-          <div class="tip" id="8">
-            <strong>Signature:</strong> typ:Type -&gt; expr:Expr -&gt; Expr<br />
-                      </div>
+          <div class="tip" id="14">
+            <strong>Signature:</strong> functionModule:Type -&gt; propertyMap:Map&lt;string list,Type&gt; -&gt; basic:TransformDefinition -&gt; Transform<br />
+                          <strong>Type parameters:</strong> 'U          </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L50-50" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L179-179" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Shortcut for Expr.Coerce</p>
+          <p>Creates a transform out of an F# function as defined in a TransformDefinition</p>
 
 
 
@@ -117,20 +167,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '9', 9)" onmouseover="showTip(event, '9', 9)">
-            getMethod _arg1
+          <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
+            getFunctionFromName (...)
           </code>
-          <div class="tip" id="9">
-            <strong>Signature:</strong> _arg1:Expr -&gt; MethodInfo<br />
+          <div class="tip" id="15">
+            <strong>Signature:</strong> functionName:string -&gt; functionModule:Type -&gt; MethodInfo<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L58-58" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L40-40" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Makes it easy to get a MethodInfo out of a quotation. 
-x: let m = (getMethod <@ failwith message @>).MakeGenericMethod([|utype|])</p>
+          <p>Gets a MethodInfo for a function (as a string) in a given module</p>
 
 
 
@@ -139,40 +188,19 @@ x: let m = (getMethod <@ failwith message @>).MakeGenericMethod([|utype|])</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '10', 10)" onmouseover="showTip(event, '10', 10)">
-            newrec typ args
+          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
+            getFunctionType mi
           </code>
-          <div class="tip" id="10">
-            <strong>Signature:</strong> typ:Type -&gt; args:Expr list -&gt; Expr<br />
+          <div class="tip" id="16">
+            <strong>Signature:</strong> mi:MethodInfo -&gt; TransformFunctionTypeAttribute option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L52-52" class="github-link">
+            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/StaticReflection.fs#L26-26" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Shortcut for Expr.NewRecord</p>
-
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '11', 11)" onmouseover="showTip(event, '11', 11)">
-            X 
-          </code>
-          <div class="tip" id="11">
-            <strong>Signature:</strong> &#39;T<br />
-                          <strong>Type parameters:</strong> 'T          </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/BayardRock/Fungible/tree/master/src/Fungible/Fungible.fs#L65-65" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Makes it easy to get a placeholder value for a type used to be used in a quotation</p>
+          <p>Gets the transform type from a given MethodInfo as given by a TransformFunctionTypeAttribute</p>
 
 
 
