@@ -53,7 +53,8 @@ module ExprHelpers =
     /// Shortcut for Expr.Call    
     let inline call meth args = Expr.Call(meth, args)
 
-    /// Makes it easy to get a MethodInfo out of a quotation. ex: let m = (getMethod <@ failwith message @>).MakeGenericMethod([|utype|])
+    /// Makes it easy to get a MethodInfo out of a quotation. 
+    /// x: let m = (getMethod <@ failwith message @>).MakeGenericMethod([|utype|])
     let getMethod = 
         function
         | Patterns.Call (_, m, _) when m.IsGenericMethod -> m.GetGenericMethodDefinition()
@@ -294,13 +295,10 @@ module internal Copiers =
     and genUnionCopier rcs (utype: Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
         // if - union case - then - copy each field into new case - else - next case
         let cases = FSharpType.GetUnionCases utype
-
         let genCaseTest case = Expr.UnionCaseTest (instance, case)
-        
         let makeCopyCtor (ci: UnionCaseInfo) = 
             let copiedMembers = [ for field in ci.GetFields() -> genFieldCopy rcs instance field funcs path ]
             Expr.NewUnionCase(ci, copiedMembers)
-
         let genIf ifCase thenCase elseCase = Expr.IfThenElse(ifCase, thenCase, elseCase)
      
         match funcs |> Map.containsKey path, rcs.CloneWhenNoChanges with
@@ -311,8 +309,10 @@ module internal Copiers =
             |> Array.foldBack (fun iff st -> iff st) <| (getTypedException utype "Unexpected Case in Union")
         | false, false -> instance       
 
+    open Microsoft.FSharp.Linq.RuntimeHelpers
+
     let toLinq<'I,'O> (expr: Expr<'I -> 'O>) =
-        let linq = Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.QuotationToExpression expr
+        let linq = LeafExpressionConverter.QuotationToExpression expr
         let call = linq :?> MethodCallExpression
         let lambda  = call.Arguments.[0] :?> LambdaExpression
         Expression.Lambda<Func<'I,'O>>(lambda.Body, lambda.Parameters)
