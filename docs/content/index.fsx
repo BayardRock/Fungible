@@ -3,22 +3,23 @@
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin/Fungible"
 
+
+//<div class="row">
+//  <div class="span1"></div>
+//  <div class="span6">
+//    <div class="well well-small" id="nuget">
+//      The Fungible library (will eventually) be <a href="https://nuget.org/packages/Fungible">installed from NuGet</a>:
+//      <pre>PM> Install-Package Fungible</pre>
+//    </div>
+//  </div>
+//  <div class="span1"></div>
+//</div>
+
 (**
 Fungible
 ======================
 
 Fungible is a library for updating typed immutable record/map trees in F# via function injection into code which copies said tree. We at BayardRock use it to do dynamic data cleaning of inputs based on our configuration file.
-
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The Fungible library can be <a href="https://nuget.org/packages/Fungible">installed from NuGet</a>:
-      <pre>PM> Install-Package Fungible</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
 
 Documentation is currently a work in progress.
 
