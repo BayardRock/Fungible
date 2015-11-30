@@ -1,7 +1,7 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin/Fungible"
+#I "../../bin/Fungible.Barb"
 
 (**
 Introducing your project
@@ -12,6 +12,8 @@ and opening the appropriate namespaces.
 
 *)
 #r "Fungible.dll"
+#r "Barb.dll"
+#r "Fungible.Barb.dll"
 
 open Fungible
 open Fungible.Core
@@ -120,13 +122,43 @@ module TestFunctions =
             if Array.IndexOf(toRemove, c) = -1 then sb.Append(c) |> ignore
         sb.ToString()   
 
-let ex6 = 
+let ex6_staticTransforms = 
     let settings =  [| { TargetPath = "Names"; 
                          FunctionName = "removeCharacters"; 
                          FunctionArgs = [| "R"; "r" |] } |]
     let propertyMap = getPathsAndTypes<Person>()
     let generator = generateTransform TestFunctions.ModuleType propertyMap
-    let transforms = settings |> Array.map generator
-    let compiledTransforms = compileTransforms<Person, Person> transforms
+    settings |> Array.map generator
+
+let ex6 =
+    let compiledTransforms = compileTransforms<Person, Person> ex6_staticTransforms
     testPersons |> List.map (fun p -> compiledTransforms p p)
 
+(**
+Next let's explore using Barb functions with the Barb extension library.
+*)
+
+open Barb.Representation
+open Fungible.Barb
+
+let ex7_barbTransforms = 
+    let barbSettings = BarbSettings.Default
+    let barbDefs = [| { TargetPath = "Names"
+                        Kind = "Map"
+                        Function = "Value.ToLower()" } |]
+    let propertyMap = getPathsAndTypes<Person>()
+    let generator = generateBarbTransform<Person> barbSettings propertyMap
+    barbDefs |> Array.map generator
+
+let ex7 =  
+    let compiledTransforms = compileTransforms<Person, Person> ex7_barbTransforms
+    testPersons |> List.map (fun p -> compiledTransforms p p)
+
+(**
+You can mix Barb and Static Reflection transforms interchangeably. 
+*)
+
+let ex8 = 
+    let mixedTransforms = Array.append ex7_barbTransforms ex6_staticTransforms
+    let compiledTransforms = compileTransforms<Person, Person> mixedTransforms
+    testPersons |> List.map (fun p -> compiledTransforms p p)
