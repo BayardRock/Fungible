@@ -1,6 +1,6 @@
 source https://nuget.org/api/v2
 
-nuget Barb 1.0.1 framework: >= net45
+nuget Barb 1.0.2 framework: >= net45
 nuget FSharp.Formatting
 nuget NUnit 
 nuget NUnit.Runners
