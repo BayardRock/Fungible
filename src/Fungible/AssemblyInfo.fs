@@ -4,9 +4,9 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Fungible")>]
 [<assembly: AssemblyProductAttribute("Fungible")>]
 [<assembly: AssemblyDescriptionAttribute("A library for fast reflective changes to immutable data trees")>]
-[<assembly: AssemblyVersionAttribute("0.0.1")>]
-[<assembly: AssemblyFileVersionAttribute("0.0.1")>]
+[<assembly: AssemblyVersionAttribute("1.0")>]
+[<assembly: AssemblyFileVersionAttribute("1.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "0.0.1"
+    let [<Literal>] Version = "1.0"
