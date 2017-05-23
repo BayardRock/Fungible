@@ -2,7 +2,7 @@ REDIRECTS: ON
 FRAMEWORK: NET45
 NUGET
   remote: https://www.nuget.org/api/v2
-    Barb (1.0.2)
+    Barb (1.0.3)
     FAKE (4.61.2)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
@@ -12,19 +12,17 @@ NUGET
       FSharp.Compiler.Service (>= 2.0.0.3)
     Octokit (0.24)
     SourceLink.Fake (1.1)
-    xunit (2.2)
-      xunit.assert (2.2)
-      xunit.core (2.2)
-    xunit.abstractions (2.0.1)
-    xunit.assert (2.2)
-    xunit.core (2.2)
-      xunit.extensibility.core (2.2)
-      xunit.extensibility.execution (2.2)
-    xunit.extensibility.core (2.2)
-    xunit.extensibility.execution (2.2)
+    xunit (2.0)
+      xunit.assert (2.0)
+      xunit.core (2.0)
+    xunit.abstractions (2.0)
+    xunit.assert (2.0)
+    xunit.core (2.0)
+      xunit.extensibility.core (2.0)
+    xunit.extensibility.core (2.0)
+      xunit.abstractions (2.0)
     xunit.runner.console (2.2)
-    xunit.runner.visualstudio (2.2.0) - version_in_path: true
-    xunit.runners (2.0)
+    xunit.runner.visualstudio (2.1.0) - version_in_path: true
 GITHUB
   remote: fsharp/FAKE
     modules/Octokit/Octokit.fsx (1ada6a9c84aada940bd7e6a7b63c0dc62e2fa56e)

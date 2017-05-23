@@ -3,13 +3,16 @@ redirects: on
 
 source https://nuget.org/api/v2
 
-nuget Barb 1.0.2
+nuget Barb 1.0.3
 nuget FSharp.Formatting
-nuget XUnit
-nuget xunit.abstractions
-nuget xunit.runner.visualstudio version_in_path: true
+nuget xunit 2.0.0
+nuget xunit.abstractions 2.0.0
+nuget xunit.assert 2.0.0
+nuget xunit.core 2.0.0
+nuget xunit.extensibility.core 2.0.0
 nuget xunit.runner.console
-nuget xunit.runners
+nuget xunit.runner.visualstudio 2.1.0 version_in_path: true
+
 nuget FAKE
 nuget SourceLink.Fake
 
