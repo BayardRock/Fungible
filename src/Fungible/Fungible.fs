@@ -49,11 +49,7 @@ type FieldUpdaters = Map<string list, FieldAction list>
 module ExprHelpers = 
     /// Shortcut for Expr.Application
     let inline application prms expr = Expr.Application(expr, prms)
-    /// Compare Application
-    let inline applyCompare (name: string list) prm expr = 
-        let inputs = Expr.NewTuple [Expr.Value name; prm; prm]
-        Expr.Sequential(Expr.Application(expr, inputs), Expr.Value prm)
-
+       
     // Example of applyCompare
     //   let testCompareFun (name: string list, oldv: int, newv: int) = let dispName = String.concat "." name in printfn "%s %i %i" dispName oldv newv
     //   let applied = applyCompare ["Hello"; "World"] (Expr.Value 10) <@@ testCompareFun @@>
@@ -75,6 +71,14 @@ module ExprHelpers =
 
     /// Makes it easy to get a placeholder value for a type used to be used in a quotation
     let X<'T> : 'T = Unchecked.defaultof<'T>
+
+    /// Compare Application
+    let returnNotUnitSecond (_: 'a) (v2: 'b) = v2
+    let inline applyCompare (prmType: Type) (name: string list) prm1 prm2 compFunExpr = 
+        let inputs = Expr.NewTuple [Expr.Value name; prm1; prm2]
+        let app = Expr.Application(compFunExpr, inputs)
+        let meth = (getMethod <@ returnNotUnitSecond X X @>).MakeGenericMethod([|typeof<unit>; prmType|])
+        Expr.Call(meth, [app; prm2])
 
 module CollectionHelpers =
 
@@ -190,7 +194,7 @@ module internal Copiers =
         let pval = Expr.PropertyGet(recordInstance, field) 
         makeCopyExpr rcs field.PropertyType funcs path pval
          
-    and genSimpleValueCopy _ (_: Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
+    and genSimpleValueCopy _ (vtype: Type) (funcs: FieldUpdaters) (path: string list) (origInstance: Expr) : Expr = 
         let rec applyTransforms (funcs: FieldAction list) (instance: Expr) =
             match funcs with   
             | [] -> instance
@@ -200,12 +204,12 @@ module internal Copiers =
             | Collect(_) :: _ -> failwith "Cannot collect on simple types" 
             | Default(_) :: _ -> failwith "Cannot default on simple types"   
             | Add(_) :: _ -> failwith "Cannot add on simple types"   
-            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare vtype path origInstance instance in applyTransforms rest instance
         match funcs |> Map.tryFind path with
-        | Some transforms -> applyTransforms transforms instance
-        | None -> instance
+        | Some transforms -> applyTransforms transforms origInstance
+        | None -> origInstance
 
-    and genOptionCopy rcs (itype: Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
+    and genOptionCopy rcs (itype: Type) (funcs: FieldUpdaters) (path: string list) (origInstance: Expr) : Expr = 
         let etype = itype.GetGenericArguments().[0]
 
         let rec applyTransforms (funcs: FieldAction list) (instance: Expr) =
@@ -223,19 +227,19 @@ module internal Copiers =
                 let instance = Expr.Call(m, [updater; instance]) in applyTransforms rest instance
             | Function(updater) :: rest -> let instance = updater |> application instance in applyTransforms rest instance
             | Add(_) :: _ -> failwith "Cannot add on option types"
-            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare itype path origInstance instance in applyTransforms rest instance
 
         let copyOption funcs = 
             let copyfun = makeSingleArgCopyFunExpr rcs etype funcs path
             let m = (getMethod <@ Option.map X X @>).MakeGenericMethod([|etype; etype|])
-            Expr.Call(m, [copyfun; instance])
+            Expr.Call(m, [copyfun; origInstance])
     
         match funcs |> Map.tryFind path, funcs |> Map.remove path, rcs.CloneWhenNoChanges with
-        | None, _, false -> instance
+        | None, _, false -> origInstance
         | None, _, true -> copyOption Map.empty
         | Some transforms, newfuncs, _ -> applyTransforms transforms (copyOption newfuncs)
               
-    and genArrayCopier rcs (atype : Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
+    and genArrayCopier rcs (atype : Type) (funcs: FieldUpdaters) (path: string list) (origInstance: Expr) : Expr = 
         let etype = atype.GetElementType()        
 
         let rec applyTransforms (funcs: FieldAction list) (instance: Expr) =
@@ -258,21 +262,21 @@ module internal Copiers =
             | Add (adder) :: rest -> 
                 let m = (getMethod <@ addToArray X X @>).MakeGenericMethod([|etype|])          
                 let instance = Expr.Call(m, [adder; instance]) in applyTransforms rest instance
-            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare atype path origInstance instance in applyTransforms rest instance
               
         let copyArray funcs = 
             let copyfun = makeSingleArgCopyFunExpr rcs etype funcs path
             let m = (getMethod <@ Array.map X X @>).MakeGenericMethod([|etype; etype|])
-            Expr.Call(m, [copyfun; instance])
+            Expr.Call(m, [copyfun; origInstance])
 
         match funcs |> Map.tryFind path, funcs |> Map.remove path, rcs.CloneWhenNoChanges with    
-        | None, _, false -> instance
+        | None, _, false -> origInstance
         | None, _, true -> copyArray Map.empty 
         // Array of arrays, just move to the inner array
         | Some _, _, _ when etype.IsArray -> copyArray funcs 
         | Some transforms, newfuncs, _ -> applyTransforms transforms (copyArray newfuncs)
 
-    and genMapCopier rcs (atype : Type) (funcs: FieldUpdaters) (path: string list) (instance: Expr) : Expr = 
+    and genMapCopier rcs (atype : Type) (funcs: FieldUpdaters) (path: string list) (origInstance: Expr) : Expr = 
         let (ktype, vtype) = 
             let arr = atype.GetGenericArguments()
             if arr.Length <> 2 then failwithf "Unexpected Params on Map Type: %A" arr
@@ -296,15 +300,15 @@ module internal Copiers =
             | Add (adder) :: rest -> 
                 let m = (getMethod <@ addMap X X @>).MakeGenericMethod([|ktype; vtype|])            
                 let instance = Expr.Call(m, [adder; instance]) in applyTransforms rest instance
-            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare atype path origInstance instance in applyTransforms rest instance
 
         let copyMap funcs =
             let copyfun = makeSingleArgCopyFunExpr rcs (FSharpType.MakeTupleType([|ktype; vtype|])) funcs path
             let m = (getMethod <@ mapMapValues X X @>).MakeGenericMethod([|ktype; vtype|])
-            Expr.Call(m, [copyfun; instance])
+            Expr.Call(m, [copyfun; origInstance])
 
         match funcs |> Map.tryFind path, funcs |> Map.remove path, rcs.CloneWhenNoChanges with
-        | None, _, false -> instance
+        | None, _, false -> origInstance
         | None, _, true -> copyMap Map.empty 
         | Some transforms, newfuncs, _ -> applyTransforms transforms (copyMap newfuncs)
 
