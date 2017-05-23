@@ -71,7 +71,7 @@ module ExprHelpers =
     /// Compare Application
     let returnNotUnitSecond (_: 'a) (v2: 'b) = v2
     let inline applyCompare (prmType: Type) (name: string list) prm1 prm2 compFunExpr = 
-        let inputs = Expr.NewTuple [Expr.Value name; prm1; prm2]
+        let inputs = Expr.NewTuple [Expr.Value (List.rev name); prm1; prm2]
         let app = Expr.Application(compFunExpr, inputs)
         let meth = (getMethod <@ returnNotUnitSecond X X @>).MakeGenericMethod([|typeof<unit>; prmType|])
         Expr.Call(meth, [app; prm2])
@@ -258,7 +258,8 @@ module internal Copiers =
             | Add (adder) :: rest -> 
                 let m = (getMethod <@ addToArray X X @>).MakeGenericMethod([|etype|])          
                 let instance = Expr.Call(m, [adder; instance]) in applyTransforms rest instance
-            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare atype path origInstance instance in applyTransforms rest instance
+            | Compare(compfun) :: rest -> 
+                let instance = compfun |> applyCompare atype path origInstance instance in applyTransforms rest instance
               
         let copyArray funcs = 
             let copyfun = makeSingleArgCopyFunExpr rcs etype funcs path

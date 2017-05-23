@@ -167,6 +167,24 @@ let ``record cloning should be able to add to a simple array type`` () =
     let expected = { Names = [|"Rick"; "David"; "Mark"; "Pete"|] }
     Assert.Equal(expected, res)
 
+[<Fact>]
+let ``record cloning should be able to compare a simple array type`` () = 
+    let sr = { Names = [|"Rick"; "David" |] }    
+    let addFun () = [|"Mark"; "Pete"|]
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: string [], v2: string []) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
+
+    let map = [(["Names"], [makeAdder addFun; makeComparer compFun])] |> Map.ofSeq    
+
+    let func = genrateRecordTransformFunction<SimpleArrayRecord> rcs map
+    let res = func sr
+    let expected = { Names = [|"Rick"; "David"; "Mark"; "Pete"|] }
+
+    Assert.Equal(expected, res)
+    Assert.True((compResult = Some false))
+    Assert.True((compResultName = Some "Names"))
+
 //
 // Arrays of Records
 //
@@ -189,6 +207,24 @@ let ``record cloning should be able to map over a record with an array of record
     let res = func lotsOfRecordsEx
     let expected = {lotsOfRecordsEx with People = lotsOfRecordsEx.People |> Array.map (fun r -> { r with Name = r.Name.ToLowerInvariant() }) }
     Assert.Equal(expected, res)
+
+[<Fact>]
+let ``record cloning should be able to compare over a record with an array of records`` () = 
+    let updater (c: string) = c.ToLower() 
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: string, v2: string) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
+    let map = [(["Name"; "People"], [makeMap updater; makeComparer compFun])] |> Map.ofSeq  
+
+    let func = genrateRecordTransformFunction<LotsOfRecords> rcs map
+    let res = func lotsOfRecordsEx
+    let expected = {lotsOfRecordsEx with People = lotsOfRecordsEx.People |> Array.map (fun r -> { r with Name = r.Name.ToLowerInvariant() }) }
+
+    Assert.Equal(expected, res)
+    Assert.True((compResult = Some false))
+    match compResultName with
+    | Some resName -> Assert.Equal(resName, "People.Name")
+    | None -> Assert.False(false)
 
 [<Fact>]
 let ``record cloning should not be able to filter over a record with an array of records`` () =
@@ -226,6 +262,9 @@ type ThatGuy = { Name: string; Friend: SimpleRecord option; Ages: int array}
 
 let thatGuyEx = { Name = "Rick"; Friend = None; Ages = [||] }
 let thatGuyWithFriendEx = { thatGuyEx with Friend = Some <| { Name = "Mark"; Age = -10 }}
+
+type OptionGuy = { Name: string option }
+let thatOptionGuy = { Name = Some "Rick" }
 
 [<Fact>]
 let ``record cloning should be able to clone a record with an option type`` () =
@@ -292,6 +331,42 @@ let ``record cloning should be able to apply a function to an option type`` () =
         let expected = { Place = Some "here" }
         Assert.Equal(expected, res)
 
+[<Fact>]
+let ``record cloning should be able to compare an option type`` () = 
+    let updater (c: string) = c.ToLower() 
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: string option, v2: string option) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
+    let map = [(["Name"], [makeMap updater; makeComparer compFun])] |> Map.ofSeq
+
+    let func = genrateRecordTransformFunction<OptionGuy> rcs map
+    let res = func thatOptionGuy in 
+        let expected = { thatOptionGuy with Name = Some "rick" }
+        Assert.Equal(expected, res)
+
+    Assert.True((compResult = Some false))
+    match compResultName with
+    | Some resName -> Assert.Equal(resName, "Name")
+    | None -> Assert.False(false)
+
+[<Fact>]
+let ``record cloning should be able to compare over a nested option type`` () = 
+    let updater (c: string) = c.ToLower() 
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: string, v2: string) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
+    let map = [(["Name"; "Friend"], [makeMap updater; makeComparer compFun])] |> Map.ofSeq
+
+    let func = genrateRecordTransformFunction<ThatGuy> rcs map
+    let res = func thatGuyWithFriendEx in 
+        let expected = { thatGuyWithFriendEx with Friend = Some <| { thatGuyWithFriendEx.Friend.Value with Name = thatGuyWithFriendEx.Friend.Value.Name.ToLowerInvariant() } }
+        Assert.Equal(expected, res)
+    let res = func thatGuyEx in Assert.Equal(thatGuyEx, res) // No Change
+
+    Assert.True((compResult = Some false))
+    match compResultName with
+    | Some resName -> Assert.Equal(resName, "Friend.Name")
+    | None -> Assert.False(false)
 
 //
 // Union Types
@@ -321,6 +396,25 @@ let ``record cloning should be able to map a record with a union type`` () =
     let res = func quietBirdOwnerEx in 
         Assert.Equal(quietBirdOwnerEx, res)
 
+[<Fact(Skip="Unable to perform functions that exactly target a union type")>]
+let ``record cloning should be able to compare a record with a union type`` () =
+    let updater l = l - 10
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: Bird, v2: Bird) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
+    let map = [(["BirdType"], [makeMap updater; makeComparer compFun])] |> Map.ofSeq
+
+    let func = genrateRecordTransformFunction<BirdOwner> rcs map
+    let res = func loudBirdOwnerEx in
+        let expected = { loudBirdOwnerEx with BirdType = Loud 990 }
+        Assert.Equal(expected, res)
+    let res = func quietBirdOwnerEx in 
+        Assert.Equal(quietBirdOwnerEx, res)
+
+    Assert.True((compResult = Some false))
+    match compResultName with
+    | Some resName -> Assert.Equal(resName, "BirdType")
+    | None -> Assert.False(false)
     
 [<Fact>]
 let ``record cloning should not be able to filter a record with a union type`` () =
