@@ -1,2 +1,3 @@
-NUnit
-NUnit.Runners
+Xunit
+xunit.abstractions
+xunit.runner.visualstudio version_in_path: true

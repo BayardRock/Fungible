@@ -26,6 +26,8 @@ type FieldAction =
     | Function of Expr 
     /// Adds to the current collection, input function is unit -> 'a [] for a '[]  
     | Add of Expr     
+    /// Compares original and changed version of collection, input function is (string list, 'a, 'a) -> unit
+    | Compare of Expr
 with 
     /// Applies the contents of this FieldAction to the given Expr generating function
     member t.MapExpr (f: Expr -> Expr) =
@@ -36,6 +38,7 @@ with
         | Default e -> f e |> Default
         | Function e -> f e |> Function
         | Add e -> f e |> Add
+        | Compare e -> f e |> Compare
     /// All Union Cases
     static member AllActions() = 
         FSharpType.GetUnionCases typeof<FieldAction>
@@ -46,6 +49,15 @@ type FieldUpdaters = Map<string list, FieldAction list>
 module ExprHelpers = 
     /// Shortcut for Expr.Application
     let inline application prms expr = Expr.Application(expr, prms)
+    /// Compare Application
+    let inline applyCompare (name: string list) prm expr = 
+        let inputs = Expr.NewTuple [Expr.Value name; prm; prm]
+        Expr.Sequential(Expr.Application(expr, inputs), Expr.Value prm)
+
+    // Example of applyCompare
+    //   let testCompareFun (name: string list, oldv: int, newv: int) = let dispName = String.concat "." name in printfn "%s %i %i" dispName oldv newv
+    //   let applied = applyCompare ["Hello"; "World"] (Expr.Value 10) <@@ testCompareFun @@>
+
     /// Shortcut for Expr.Coerce
     let inline coerse typ expr = Expr.Coerce(expr, typ)
     /// Shortcut for Expr.NewRecord
@@ -183,11 +195,12 @@ module internal Copiers =
             match funcs with   
             | [] -> instance
             | Map(updater) :: rest -> let instance = updater |> application instance in applyTransforms rest instance
-            | Function(updater) :: rest ->  let instance = updater |> application instance in applyTransforms rest instance
+            | Function(updater) :: rest -> let instance = updater |> application instance in applyTransforms rest instance
             | Filter(_) :: _ -> failwith "Cannot filter on simple types"
             | Collect(_) :: _ -> failwith "Cannot collect on simple types" 
             | Default(_) :: _ -> failwith "Cannot default on simple types"   
             | Add(_) :: _ -> failwith "Cannot add on simple types"   
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
         match funcs |> Map.tryFind path with
         | Some transforms -> applyTransforms transforms instance
         | None -> instance
@@ -210,6 +223,7 @@ module internal Copiers =
                 let instance = Expr.Call(m, [updater; instance]) in applyTransforms rest instance
             | Function(updater) :: rest -> let instance = updater |> application instance in applyTransforms rest instance
             | Add(_) :: _ -> failwith "Cannot add on option types"
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
 
         let copyOption funcs = 
             let copyfun = makeSingleArgCopyFunExpr rcs etype funcs path
@@ -244,6 +258,7 @@ module internal Copiers =
             | Add (adder) :: rest -> 
                 let m = (getMethod <@ addToArray X X @>).MakeGenericMethod([|etype|])          
                 let instance = Expr.Call(m, [adder; instance]) in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
               
         let copyArray funcs = 
             let copyfun = makeSingleArgCopyFunExpr rcs etype funcs path
@@ -281,6 +296,7 @@ module internal Copiers =
             | Add (adder) :: rest -> 
                 let m = (getMethod <@ addMap X X @>).MakeGenericMethod([|ktype; vtype|])            
                 let instance = Expr.Call(m, [adder; instance]) in applyTransforms rest instance
+            | Compare(compfun) :: rest -> let instance = compfun |> applyCompare path instance in applyTransforms rest instance
 
         let copyMap funcs =
             let copyfun = makeSingleArgCopyFunExpr rcs (FSharpType.MakeTupleType([|ktype; vtype|])) funcs path

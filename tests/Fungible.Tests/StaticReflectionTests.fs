@@ -6,8 +6,9 @@ open Fungible.StaticReflection
 open System
 open System.Text
 open System.Globalization
+open System.ComponentModel
 
-open NUnit.Framework
+open Xunit
 
 
 type Location = 
@@ -82,38 +83,38 @@ let cleanEngineHitBasic<'T> (cleaners: TransformDefinition []) eh =
     let cleanerFunc = compileTransforms<'T, 'T> basicCleaners
     cleanerFunc eh eh
 
-[<Test>]
+[<Fact>]
 let ``basic data cleaning should properly work for removing extended chars from names`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Names = [| "Montréal" |] } } 
     let settings =  [| { TargetPath = "Cust.Names"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
-    Assert.AreEqual([| "Montreal" |], res.Cust.Names)
+    Assert.Equal<string []>([| "Montreal" |], res.Cust.Names)
 
-[<Test>]
+[<Fact>]
 let ``basic data cleaning should properly work for mapping nested arrays of names`` () = 
     let testRec = { Person.Default with StructuredNames = [|[|"Montréal"|]; [|"Montréal"|]|]}
 
     let settings =  [| { TargetPath = "StructuredNames"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
-    Assert.AreEqual([|[| "Montreal" |]; [| "Montreal" |]|], res.StructuredNames)
+    Assert.Equal<string []>([|[| "Montreal" |]; [| "Montreal" |]|], res.StructuredNames)
 
-[<Test>]
+[<Fact>]
 let ``basic data cleaning should properly map over option types nested in records in arrays`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Locations = [| { Location.Default with City = Some "Montréal" } |] } } 
     let settings =  [| { TargetPath = "Cust.Locations.City"; FunctionName = "stripAccents"; FunctionArgs = [||] } |]
     let res = cleanEngineHitBasic settings testRec
-    Assert.AreEqual("Montreal", res.Cust.Locations.[0].City.Value)
+    Assert.Equal("Montreal", res.Cust.Locations.[0].City.Value)
 
-[<Test>]
+[<Fact>]
 let ``basic data cleaning should properly work for replacing arbitrary substrings`` () = 
     let testRec = { testRec with Cust = { testRec.Cust with Names = [| "Montréal" |] } } 
     let settings =  [| { TargetPath = "Cust.Names"; FunctionName = "removeCharacters"; FunctionArgs = [|"M"; "o"; "n"; "t"|] } |]
     let res = cleanEngineHitBasic settings testRec
-    Assert.AreEqual([| "réal" |], res.Cust.Names)
+    Assert.Equal<string []>([| "réal" |], res.Cust.Names)
 
-[<Test>]
+[<Fact>]
 let ``basic data cleaning should properly default arrays of objects`` () =
     let testRec = { testRec with Cust = { testRec.Cust with Locations = [||] } } 
     let settings =  [| { TargetPath = "Cust.Locations"; FunctionName = "defaultCountries"; FunctionArgs = [|"USA"; "US"|] } |]
     let res = cleanEngineHitBasic settings testRec
-    Assert.AreEqual([| { Location.Default with Country = Some "USA" }; { Location.Default with Country = Some "US" } |], res.Cust.Locations)
+    Assert.Equal<Location []>([| { Location.Default with Country = Some "USA" }; { Location.Default with Country = Some "US" } |], res.Cust.Locations)

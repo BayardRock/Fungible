@@ -93,6 +93,7 @@ module Types =
         | "default" ->  Default,    Fixed typeof<unit>,     Outter
         | "function" -> Function,   Outter,                 Outter
         | "add" ->      Add,        Fixed typeof<unit>,     Outter
+        | "compare" ->  Compare,    Outter,                 Fixed typeof<unit>
         | otherwise -> failwithf "Unexpected type in data cleaner: %s" otherwise     
         |> fun (ew, ik, ok) -> { ExprWrapper = ew; InputKind = ik; OutputKind = ok }
 
@@ -157,7 +158,7 @@ module internal Internals =
             let dcFuncArgs =  
                 try 
                     let argsPrm = mi.GetParameters() |> Array.map (fun pi -> pi.ParameterType)
-                    if argsPrm.Length <> 2 then failwith "Function has an incorrect number of parameters." funcName
+                    if argsPrm.Length <> 2 then failwithf "Function has an incorrect number of parameters. %s" funcName
                     let convertedArgs = convertFromArgsToInputType argsPrm.[0] funcArg
                     Expr.Coerce(<@@ convertedArgs @@>, argsPrm.[0])
                 with ex -> failwithf "An error occured while creating a basic cleaner with function (%s) and arguments (%A): %s" funcName funcArg ex.Message

@@ -8,8 +8,11 @@ open Fake.Git
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open Fake.UserInputHelper
+open Fake.Testing
+
 open System
 open System.IO
+
 #if MONO
 #else
 #load "packages/SourceLink.Fake/tools/Fake.fsx"
@@ -60,6 +63,8 @@ let gitName = "Fungible"
 
 // The url for the raw files hosted
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/BayardRock"
+
+let testXmlOutput    = "build/testResults.xml"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -135,15 +140,26 @@ Target "Build" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 
+//Target "RunTests" (fun _ ->
+//    !! testAssemblies
+//    |> NUnit (fun p ->
+//        { p with
+//            DisableShadowCopy = true
+//            TimeOut = TimeSpan.FromMinutes 20.
+//            OutputFile = "TestResults.xml" })
+//)
 Target "RunTests" (fun _ ->
     !! testAssemblies
-    |> NUnit (fun p ->
+    |> xUnit2 (fun p ->
         { p with
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
+            Parallel = ParallelMode.NoParallelization
+            XmlOutputPath = Some testXmlOutput
+            ErrorLevel = TestRunnerErrorLevel.Error
+            ShadowCopy = false
+            TimeOut = TimeSpan.FromMinutes 10.
+            ToolPath = @".\packages\xunit.runner.console\tools\xunit.console.exe"
+        })
 )
-
 #if MONO
 #else
 // --------------------------------------------------------------------------------------
