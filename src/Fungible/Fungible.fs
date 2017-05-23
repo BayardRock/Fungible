@@ -50,10 +50,6 @@ module ExprHelpers =
     /// Shortcut for Expr.Application
     let inline application prms expr = Expr.Application(expr, prms)
        
-    // Example of applyCompare
-    //   let testCompareFun (name: string list, oldv: int, newv: int) = let dispName = String.concat "." name in printfn "%s %i %i" dispName oldv newv
-    //   let applied = applyCompare ["Hello"; "World"] (Expr.Value 10) <@@ testCompareFun @@>
-
     /// Shortcut for Expr.Coerce
     let inline coerse typ expr = Expr.Coerce(expr, typ)
     /// Shortcut for Expr.NewRecord
