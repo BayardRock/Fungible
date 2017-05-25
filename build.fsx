@@ -64,8 +64,6 @@ let gitName = "Fungible"
 // The url for the raw files hosted
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/BayardRock"
 
-let testXmlOutput    = "build/testResults.xml"
-
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
@@ -153,7 +151,6 @@ Target "RunTests" (fun _ ->
     |> xUnit2 (fun p ->
         { p with
             Parallel = ParallelMode.NoParallelization
-            XmlOutputPath = Some testXmlOutput
             ErrorLevel = TestRunnerErrorLevel.Error
             ShadowCopy = false
             TimeOut = TimeSpan.FromMinutes 10.
