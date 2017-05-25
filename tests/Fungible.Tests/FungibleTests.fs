@@ -516,7 +516,26 @@ let ``record cloning should be able add to a map`` () =
     let res1 = func mapNamePlaceLongEx 
     Assert.Equal(res1, { mapNamePlaceLongEx with Lookup = ["Dude", "Place"; "Rick", "ESB"; "Default", "Map" ] |> Map.ofList })
 
+[<Fact>]
+let ``record cloning should be able to compare a map`` () = 
+    let sr0 = { Lookup = Map.empty }
+    let sr1 = { Lookup = ["Dude", "Place"; "Rick", "ESB" ] |> Map.ofList }
+    let filter (k,v : string) = k = "Dude" 
+    let mutable compResult : bool Option = None
+    let mutable compResultName: string Option = None
+    let compFun (s: string list, v1: Map<string,string>, v2: Map<string,string>) = compResult <- Some (v1 = v2); compResultName <- (s |> String.concat "." |> Some)
 
+
+    let map = [(["Lookup"], [ <@@ filter @@> |> Filter; makeComparer compFun])] |> Map.ofSeq
+
+    let func = genrateRecordTransformFunction<MapNamePlace> rcs map
+    let res = func sr0 in
+        Assert.Equal(sr0, { Lookup = Map.empty })
+    let res = func sr1 in
+        Assert.Equal(res, { Lookup = ["Dude", "Place"] |> Map.ofList })
+
+    Assert.True((compResult = Some false))
+    Assert.True((compResultName = Some "Lookup"))
 
 //
 // Helpers
