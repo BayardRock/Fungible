@@ -41,8 +41,8 @@ type ValueContainer2<'u,'t> = { Scope: 'u; Value: 't }
 let MkValueContainer2 u t = { Scope = u; Value = t }
 
 module internal BarbTransformWrappers =
-    open CollectionHelpers
-    open ExprHelpers
+    open Fungible.Helpers.CollectionHelpers
+    open Fungible.Helpers.ExprHelpers
 
     let mapToKeyValueArray (m: Map<'k,'v>) =
         m |> Map.toArray |> Array.map (fun (k,v) -> new KeyValuePair<_,_>(k,v))
@@ -72,7 +72,7 @@ module internal BarbTransformWrappers =
         | _ -> None       
 
 module internal Internals = 
-    open ExprHelpers
+    open Fungible.Helpers.ExprHelpers
 
     let makeBarbFunction (barbSettings: BarbSettings) (recordType: Type) (inputType: Type) (outputType: Type) (textFunc: string) : obj -> obj =
         let wrappedInType = typeof<ValueContainer2<_,_>>.GetGenericTypeDefinition().MakeGenericType(recordType, inputType)

@@ -97,7 +97,7 @@ module Types =
         | otherwise -> failwithf "Unexpected type in data cleaner: %s" otherwise     
         |> fun (ew, ik, ok) -> { ExprWrapper = ew; InputKind = ik; OutputKind = ok }
 
-    open CollectionHelpers
+    open Fungible.Helpers.CollectionHelpers
     
     /// Gets the inner type(s) of a collection
     let getInnerType (targetType: Type) = 
