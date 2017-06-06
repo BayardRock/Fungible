@@ -5,13 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Fungible.Barb")>]
 [<assembly: AssemblyProductAttribute("Fungible")>]
 [<assembly: AssemblyDescriptionAttribute("A library for fast reflective changes to immutable data trees")>]
-[<assembly: AssemblyVersionAttribute("1.0")>]
-[<assembly: AssemblyFileVersionAttribute("1.0")>]
+[<assembly: AssemblyVersionAttribute("1.1")>]
+[<assembly: AssemblyFileVersionAttribute("1.1")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Fungible.Barb"
     let [<Literal>] AssemblyProduct = "Fungible"
     let [<Literal>] AssemblyDescription = "A library for fast reflective changes to immutable data trees"
-    let [<Literal>] AssemblyVersion = "1.0"
-    let [<Literal>] AssemblyFileVersion = "1.0"
+    let [<Literal>] AssemblyVersion = "1.1"
+    let [<Literal>] AssemblyFileVersion = "1.1"
