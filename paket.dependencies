@@ -12,6 +12,7 @@ nuget xunit.core 2.0.0
 nuget xunit.extensibility.core 2.0.0
 nuget xunit.runner.console
 nuget xunit.runner.visualstudio 2.1.0 version_in_path: true
+nuget FSharp.Quotations.Evaluator 1.0.7
 
 nuget FAKE
 nuget SourceLink.Fake
