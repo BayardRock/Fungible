@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers.fs" />
+    <Compile Include="Paths.fs" />
     <Compile Include="Fungible.fs" />
     <Compile Include="Walker.fs" />
+    <Compile Include="Compile.fs" />
     <Compile Include="StaticReflection.fs" />
     <None Include="paket.references" />
     <None Include="paket.template" />

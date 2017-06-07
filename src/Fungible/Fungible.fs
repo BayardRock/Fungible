@@ -258,88 +258,23 @@ module internal Copiers =
             |> Array.foldBack (fun iff st -> iff st) <| (getTypedException utype "Unexpected Case in Union")
         | false, false -> instance       
 
-    open Microsoft.FSharp.Linq.RuntimeHelpers
-
-    let toLinq<'I,'O> (expr: Expr<'I -> 'O>) =
-        let linq = LeafExpressionConverter.QuotationToExpression expr
-        let call = linq :?> MethodCallExpression
-        let lambda  = call.Arguments.[0] :?> LambdaExpression
-        Expression.Lambda<Func<'I,'O>>(lambda.Body, lambda.Parameters)
-
-module internal ExpressionHelepers =
-
-    // Unnests F# Lamdbas in C# Linq Expressions
-    let rec unnestLambdas (linq:Expression) = 
-      match linq with
-      | :? MethodCallExpression as mc ->
-          let le = mc.Arguments.[0] :?> LambdaExpression
-          let args, body = unnestLambdas le.Body
-          le.Parameters.[0] :: args, body
-      | _ -> [], linq
-
-    let toLinq2<'I1, 'I2, 'O> (expr: Expr<'I1 -> 'I2 -> 'O>) =
-        let linq = Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.QuotationToExpression expr
-        let prms, body = linq :?> MethodCallExpression |> unnestLambdas
-        Expression.Lambda<Func<'I1,'I2,'O>>(body, prms |> Array.ofList)
-
-open ExpressionHelepers
-
-module internal Pathing = 
-
-    let fillFieldUpdaterParents (fis: FieldUpdaters) =
-        let rec inner (toProcess: (string list * FieldAction list) list) (fis: FieldUpdaters) =
-            match toProcess with
-            | h :: rest ->  
-                match h with
-                | _ :: pathRest, _ -> 
-                    match fis |> Map.containsKey pathRest with
-                    | true -> inner ((pathRest, []) :: rest) fis
-                    | false -> inner ((pathRest, []) :: rest) (fis |> Map.add pathRest [])
-                | _ -> inner rest fis
-            | [] -> fis
-        inner (fis |> Map.toList) fis
-
-    let rec getPathsFor (mtype: Type) (path: string list) (yieldedParent: bool) = 
-        seq {
-            match mtype with 
-            | IsOptionType t -> 
-                yield path, t
-                let et = t.GetGenericArguments().[0]
-                yield! getPathsFor et path true
-            | _ when FSharpType.IsRecord mtype -> 
-                if not yieldedParent then yield path, mtype
-                yield! getRecordPaths mtype path
-            | _ when mtype.IsValueType || mtype = typeof<String> -> 
-                if not yieldedParent then yield path, mtype
-            | _ when mtype.IsArray ->
-                if not yieldedParent then yield path, mtype
-                yield! genArrayPaths mtype path
-            | IsMapType _ -> yield path, mtype 
-            | _ when mtype = typeof<System.Object> -> yield path, mtype
-            | _ when FSharpType.IsUnion mtype  -> yield path, mtype
-            | _ -> failwithf "Unexpected Type in Path: %s" (mtype.ToString())
-        }
-
-    and getRecordPaths (rtype: Type) (path: string list) = 
-        seq {
-            let pathedFields = 
-                FSharpType.GetRecordFields(rtype) 
-                |> Array.toList
-                |> List.map (fun field -> field.Name :: path, field.PropertyType)
-            for (path, ptype) in pathedFields do
-                yield! getPathsFor ptype path false
-        }
-
-    and genArrayPaths (atype : Type) (path: string list)  = 
-        let etype = atype.GetElementType()        
-        seq {
-            yield path, atype
-            yield! getPathsFor etype path true
-        }
-
 
 open Copiers
-open Pathing
+open Fungible.Paths
+open Fungible.Helpers.Linq
+
+let fillFieldUpdaterParents (fis: FieldUpdaters) =
+    let rec inner (toProcess: (string list * FieldAction list) list) (fis: FieldUpdaters) =
+        match toProcess with
+        | h :: rest ->  
+            match h with
+            | _ :: pathRest, _ -> 
+                match fis |> Map.containsKey pathRest with
+                | true -> inner ((pathRest, []) :: rest) fis
+                | false -> inner ((pathRest, []) :: rest) (fis |> Map.add pathRest [])
+            | _ -> inner rest fis
+        | [] -> fis
+    inner (fis |> Map.toList) fis
 
 /// <summary>
 /// Given a collection of FieldUpdater transform produces a function which applies them to a F# type tree
@@ -377,10 +312,3 @@ let genrateRecordTransformFunctionWithArgs<'U,'T> settings (replacmentVarName: s
    
     let compiledExpr = (castExpr |> toLinq2<'U,'T,'T>).Compile()
     fun (u: 'U) (v : 'T) -> compiledExpr.Invoke(u, v)
-
-/// <summary>
-/// Returns a map of the valid paths with type for a given input type.
-/// </summary>
-let getPathsAndTypes<'t> () = 
-    let rtype = typeof<'t>
-    getPathsFor rtype [] true |> Map.ofSeq

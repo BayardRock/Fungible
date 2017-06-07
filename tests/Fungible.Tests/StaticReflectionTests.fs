@@ -2,6 +2,7 @@
 
 open Fungible.Core
 open Fungible.StaticReflection
+open Fungible.Paths
 
 open System
 open System.Text

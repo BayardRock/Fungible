@@ -68,3 +68,33 @@ module CollectionHelpers =
     let (|IsOptionType|_|) (t: Type) =
         if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<option<_>> then Some t
         else None
+
+module Linq =
+    
+    open System
+    open System.Reflection
+    open System.Linq.Expressions
+
+    open Microsoft.FSharp.Reflection
+    open Microsoft.FSharp.Quotations
+    open Microsoft.FSharp.Linq.RuntimeHelpers
+
+    let toLinq<'I,'O> (expr: Expr<'I -> 'O>) =
+        let linq = LeafExpressionConverter.QuotationToExpression expr
+        let call = linq :?> MethodCallExpression
+        let lambda  = call.Arguments.[0] :?> LambdaExpression
+        Expression.Lambda<Func<'I,'O>>(lambda.Body, lambda.Parameters)
+
+    // Unnests F# Lamdbas in C# Linq Expressions
+    let rec unnestLambdas (linq:Expression) = 
+      match linq with
+      | :? MethodCallExpression as mc ->
+          let le = mc.Arguments.[0] :?> LambdaExpression
+          let args, body = unnestLambdas le.Body
+          le.Parameters.[0] :: args, body
+      | _ -> [], linq
+
+    let toLinq2<'I1, 'I2, 'O> (expr: Expr<'I1 -> 'I2 -> 'O>) =
+        let linq = Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.QuotationToExpression expr
+        let prms, body = linq :?> MethodCallExpression |> unnestLambdas
+        Expression.Lambda<Func<'I1,'I2,'O>>(body, prms |> Array.ofList)

@@ -1,6 +1,7 @@
 module Fungible.Tests
 
 open Fungible.Core
+open Fungible.Paths
 
 open Xunit
 

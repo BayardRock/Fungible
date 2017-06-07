@@ -11,6 +11,7 @@ open System.Linq.Expressions
 open Microsoft.FSharp.Reflection
 open Microsoft.FSharp.Quotations
 
+// Note: Sequence N Exprs for speedup
 let returnNotUnitSecond (_: 'a) (v2: 'b) = v2
 let sequenceExprs (expr1: Expr) (expr2: Expr) =
     let meth = (getMethod <@ returnNotUnitSecond X X @>).MakeGenericMethod([|expr1.Type; expr2.Type|])

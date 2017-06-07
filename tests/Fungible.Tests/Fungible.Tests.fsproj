@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="FungibleTests.fs" />
     <Compile Include="StaticReflectionTests.fs" />
+    <Compile Include="WalkerTests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
