@@ -1,9 +1,9 @@
 REDIRECTS: ON
-FRAMEWORK: NET45
+RESTRICTION: == net45
 NUGET
   remote: https://www.nuget.org/api/v2
-    Barb (1.0.3)
-    FAKE (4.61.3)
+    Barb (1.0.4)
+    FAKE (4.62.6)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
       FSharp.Compiler.Service (2.0.0.6)
@@ -26,5 +26,5 @@ NUGET
     xunit.runner.visualstudio (2.1.0) - version_in_path: true
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (ad65548e62c35ad64ad1f9db6f5768330bc06594)
+    modules/Octokit/Octokit.fsx (f8bb9489b5f2ef310fed56bb4e226d3d0896fc51)
       Octokit (>= 0.20)

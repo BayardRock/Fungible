@@ -1,4 +1,4 @@
-﻿module Fungible.Walker
+﻿module internal Fungible.Walker
 
 open Fungible.Helpers
 open Fungible.Helpers.ExprHelpers

@@ -3,7 +3,7 @@ redirects: on
 
 source https://nuget.org/api/v2
 
-nuget Barb 1.0.3
+nuget Barb 1.0.4
 nuget FSharp.Formatting
 nuget xunit 2.0.0
 nuget xunit.abstractions 2.0.0
