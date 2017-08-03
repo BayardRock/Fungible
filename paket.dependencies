@@ -1,9 +1,9 @@
-framework: auto-detect
+framework: net35, net40, net45, net451, net452
 redirects: on
 
 source https://nuget.org/api/v2
 
-nuget Barb 1.0.4
+nuget Barb 1.0.5
 nuget FSharp.Formatting
 nuget xunit 2.0.0
 nuget xunit.abstractions 2.0.0

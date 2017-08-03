@@ -1,9 +1,9 @@
 REDIRECTS: ON
-RESTRICTION: == net45
+RESTRICTION: || (== net35) (== net40) (== net45) (== net451) (== net452)
 NUGET
   remote: https://www.nuget.org/api/v2
-    Barb (1.0.4)
-    FAKE (4.62.6)
+    Barb (1.0.5)
+    FAKE (4.63)
     FSharp.Compiler.Service (2.0.0.6)
     FSharp.Formatting (2.14.4)
       FSharp.Compiler.Service (2.0.0.6)
@@ -11,7 +11,14 @@ NUGET
     FSharp.Quotations.Evaluator (1.0.7)
     FSharpVSPowerTools.Core (2.3)
       FSharp.Compiler.Service (>= 2.0.0.3)
+    Microsoft.Bcl (1.1.10) - restriction: || (== net35) (&& (== net35) (== net40)) (&& (== net35) (== net45)) (&& (== net35) (== net451)) (&& (== net35) (== net452)) (== net40) (&& (== net40) (== net45)) (&& (== net40) (== net451)) (&& (== net40) (== net452)) (&& (== net451) (== net452) (< net45) (< portable-win81+wpa81)) (&& (== net451) (< net45) (< portable-win81+wpa81)) (&& (== net452) (< net45) (< portable-win81+wpa81))
+      Microsoft.Bcl.Build (>= 1.0.14)
+    Microsoft.Bcl.Build (1.0.21) - import_targets: false, restriction: || (== net35) (&& (== net35) (== net40)) (&& (== net35) (== net45)) (&& (== net35) (== net451)) (&& (== net35) (== net452)) (== net40) (&& (== net40) (== net45)) (&& (== net40) (== net451)) (&& (== net40) (== net452)) (&& (== net451) (== net452) (< net45) (< portable-win81+wpa81)) (&& (== net451) (< net45) (< portable-win81+wpa81)) (&& (== net452) (< net45) (< portable-win81+wpa81))
+    Microsoft.Net.Http (2.2.29) - restriction: || (== net35) (&& (== net35) (== net40)) (&& (== net35) (== net45)) (&& (== net35) (== net451)) (&& (== net35) (== net452)) (== net40) (&& (== net40) (== net45)) (&& (== net40) (== net451)) (&& (== net40) (== net452)) (&& (== net451) (== net452) (< net45) (< portable-win81+wpa81)) (&& (== net451) (< net45) (< portable-win81+wpa81)) (&& (== net452) (< net45) (< portable-win81+wpa81))
+      Microsoft.Bcl (>= 1.1.10)
+      Microsoft.Bcl.Build (>= 1.0.14)
     Octokit (0.24)
+      Microsoft.Net.Http  - restriction: || (== net35) (== net40) (&& (== net451) (< net45) (< portable-win81+wpa81)) (&& (== net452) (< net45) (< portable-win81+wpa81))
     SourceLink.Fake (1.1)
     xunit (2.0)
       xunit.assert (2.0)
@@ -26,5 +33,5 @@ NUGET
     xunit.runner.visualstudio (2.1.0) - version_in_path: true
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (f8bb9489b5f2ef310fed56bb4e226d3d0896fc51)
+    modules/Octokit/Octokit.fsx (291f58cc70aba6dd871cf18e66d2d88357e4f208)
       Octokit (>= 0.20)
