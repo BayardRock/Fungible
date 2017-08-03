@@ -1,4 +1,4 @@
-#### 1.3 - July 26 2017
+#### 1.3 - August 3 2017
 * Updated to Barb 1.0.5
 
 #### 1.2 - July 26 2017
