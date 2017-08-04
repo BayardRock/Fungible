@@ -41,8 +41,9 @@ let genRecordWalker (rtype: Type) (path: string list) (instance1: Expr) (instanc
     |> List.reduce (fun e1 e2 ->  sequenceExprs e1 e2) 
 
 let genPOCOWalker (ctype: Type) (path: string list) (instance1: Expr) (instance2: Expr) dispatchOnType : Expr =
-    ctype.GetProperties()
+    ctype.GetProperties()    
     |> Array.toList
+    |> List.filter (fun pi -> pi.CanRead) // Filter out Set-Only Properties
     |> List.map (fun field -> field.Name :: path, field)
     |> List.map (fun (fpath, field) -> genFieldWalker instance1 instance2 field fpath dispatchOnType)
     |> List.reduce (fun e1 e2 ->  sequenceExprs e1 e2) 
