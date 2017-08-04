@@ -77,18 +77,6 @@ let rec dispatchOnType (settings: WalkerSettings) (f: obj -> obj -> string list 
                 callFunAndCont f path instance1 instance2 walker
       | _ -> failwithf "Unexpected type: %s" (mtype.ToString())
 
-open System.Reflection
-
-type IMyInterface =
-    abstract member Foo: string
-
-type MyType () =
-    member t.Bar = "wat"
-    interface IMyInterface with
-       member t.Foo = "woa"
-
-typeof<IMyInterface>.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-
 let makeWalkerLambdaExpr (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) : Expr =
     let arg1 = Var("x", mtype, false)
     let useArg1 = Expr.Var(arg1)
