@@ -59,24 +59,14 @@ let callFunAndCont (f: obj -> obj -> string list -> unit) (path: string list) (i
 
 let rec dispatchOnType (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) (instance1: Expr) (instance2: Expr) : Expr = 
     match mtype with 
-//   | IsOptionType _ -> walkOption mtype path instance1 instance2 dispatchOnType
     | _ when FSharpType.IsRecord mtype -> 
                 let walker = genRecordWalker mtype path instance1 instance2 (dispatchOnType settings f)
                 callFunAndCont f path instance1 instance2 walker
-                //genRecordWalker mtype path instance1 instance2 (dispatchOnType f)
-//    | _ when FSharpType.IsUnion mtype  -> genUnionCopier rcs mtype funcs path instance
-    | _ when mtype.IsValueType || mtype = typeof<String> -> makeFuncionCall f path instance1 instance2
-
-//    | _ when mtype.IsArray -> genArrayCopier rcs mtype funcs path instance
-//    | IsMapType _ -> genMapCopier rcs mtype funcs path instance
-//    | _ when FSharpType.IsTuple mtype -> genTupleCopyFunExpr rcs mtype funcs path instance
-//    | _ when mtype = typeof<obj> -> instance 
-//    | _ when rcs.FailOnUnsupportedType -> failwithf "Type not supported in record cloning: %s" mtype.FullName
-//    | _ -> instance      
-      | _ when mtype.IsClass && settings.CompareCSharpProperties -> 
+    | _ when mtype.IsValueType || mtype = typeof<String> -> makeFuncionCall f path instance1 instance2     
+    | _ when mtype.IsClass && settings.CompareCSharpProperties -> 
                 let walker = genPOCOWalker mtype path instance1 instance2 (dispatchOnType settings f)
                 callFunAndCont f path instance1 instance2 walker
-      | _ -> failwithf "Unexpected type: %s" (mtype.ToString())
+    | _ -> failwithf "Unexpected type: %s" (mtype.ToString())
 
 let makeWalkerLambdaExpr (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) : Expr =
     let arg1 = Var("x", mtype, false)
