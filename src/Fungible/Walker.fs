@@ -1,4 +1,4 @@
-﻿module internal Fungible.Walker
+﻿module Fungible.Walker
 
 open Fungible.Helpers
 open Fungible.Helpers.ExprHelpers
@@ -12,6 +12,11 @@ open System.Linq.Expressions
 open Microsoft.FSharp.Reflection
 open Microsoft.FSharp.Quotations
 
+type WalkerSettings = 
+    {
+        CompareCSharpProperties: bool
+    }
+    static member Default = { CompareCSharpProperties = true }
 
 let sequenceExprs (expr1: Expr) (expr2: Expr) =
     Expr.Sequential(expr1, expr2)
@@ -35,6 +40,13 @@ let genRecordWalker (rtype: Type) (path: string list) (instance1: Expr) (instanc
     |> List.map (fun (fpath, field) -> genFieldWalker instance1 instance2 field fpath dispatchOnType)
     |> List.reduce (fun e1 e2 ->  sequenceExprs e1 e2) 
 
+let genPOCOWalker (ctype: Type) (path: string list) (instance1: Expr) (instance2: Expr) dispatchOnType : Expr =
+    ctype.GetProperties()
+    |> Array.toList
+    |> List.map (fun field -> field.Name :: path, field)
+    |> List.map (fun (fpath, field) -> genFieldWalker instance1 instance2 field fpath dispatchOnType)
+    |> List.reduce (fun e1 e2 ->  sequenceExprs e1 e2) 
+
 let makeFuncionCall (f: obj -> obj -> string list -> unit) (path: string list) (instance1: Expr) (instance2: Expr) =
     let objExpr1 = Expr.Coerce(instance1, typeof<obj>)
     let objExpr2 = Expr.Coerce(instance2, typeof<obj>)
@@ -44,11 +56,11 @@ let callFunAndCont (f: obj -> obj -> string list -> unit) (path: string list) (i
     let functionExpr = makeFuncionCall f path instance1 instance2    
     sequenceExprs functionExpr next
 
-let rec dispatchOnType (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) (instance1: Expr) (instance2: Expr) : Expr = 
+let rec dispatchOnType (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) (instance1: Expr) (instance2: Expr) : Expr = 
     match mtype with 
 //   | IsOptionType _ -> walkOption mtype path instance1 instance2 dispatchOnType
     | _ when FSharpType.IsRecord mtype -> 
-                let walker = genRecordWalker mtype path instance1 instance2 (dispatchOnType f)
+                let walker = genRecordWalker mtype path instance1 instance2 (dispatchOnType settings f)
                 callFunAndCont f path instance1 instance2 walker
                 //genRecordWalker mtype path instance1 instance2 (dispatchOnType f)
 //    | _ when FSharpType.IsUnion mtype  -> genUnionCopier rcs mtype funcs path instance
@@ -60,21 +72,36 @@ let rec dispatchOnType (f: obj -> obj -> string list -> unit) (mtype: Type) (pat
 //    | _ when mtype = typeof<obj> -> instance 
 //    | _ when rcs.FailOnUnsupportedType -> failwithf "Type not supported in record cloning: %s" mtype.FullName
 //    | _ -> instance      
+      | _ when mtype.IsClass && settings.CompareCSharpProperties -> 
+                let walker = genPOCOWalker mtype path instance1 instance2 (dispatchOnType settings f)
+                callFunAndCont f path instance1 instance2 walker
       | _ -> failwithf "Unexpected type: %s" (mtype.ToString())
 
-let makeWalkerLambdaExpr (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) : Expr =
+open System.Reflection
+
+type IMyInterface =
+    abstract member Foo: string
+
+type MyType () =
+    member t.Bar = "wat"
+    interface IMyInterface with
+       member t.Foo = "woa"
+
+typeof<IMyInterface>.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
+
+let makeWalkerLambdaExpr (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) : Expr =
     let arg1 = Var("x", mtype, false)
     let useArg1 = Expr.Var(arg1)
     let arg2 = Var("y", mtype, false)
     let useArg2 = Expr.Var(arg2)
-    let contents = dispatchOnType f mtype path useArg1 useArg2
+    let contents = dispatchOnType settings f mtype path useArg1 useArg2
     Expr.Lambda(arg1, Expr.Lambda(arg2, contents))
 
 open FSharp.Quotations.Evaluator
 
-let generateWalker<'T> (f: obj -> obj -> string list -> unit) : ('T -> 'T -> unit) =
+let generateWalker<'T> (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) : ('T -> 'T -> unit) =
     let baseType = typeof<'T>
-    let contents = makeWalkerLambdaExpr f baseType []
+    let contents = makeWalkerLambdaExpr settings f baseType []
     let castExpr : Expr<'T -> 'T -> unit> = contents |> Expr.Cast
     castExpr.Compile()
 
