@@ -18,6 +18,8 @@ type WalkerSettings =
     }
     static member Default = { CompareCSharpProperties = true }
 
+type InputFunction = obj -> obj -> string list -> unit
+
 let sequenceExprs (expr1: Expr) (expr2: Expr) =
     Expr.Sequential(expr1, expr2)
 
@@ -51,7 +53,7 @@ let genPOCOWalker (ctype: Type) (path: string list) (instance1: Expr) (instance2
 let makeFuncionCall (fexpr: Expr) (path: string list) (instance1: Expr) (instance2: Expr) =
     let objExpr1 = Expr.Coerce(instance1, typeof<obj>)
     let objExpr2 = Expr.Coerce(instance2, typeof<obj>)
-    <@@ (%%fexpr : obj -> obj -> string list -> unit) %%objExpr1 %%objExpr2 path @@>
+    <@@ (%%fexpr : InputFunction) %%objExpr1 %%objExpr2 path @@>
 
 let callFunAndCont (fexpr: Expr) (path: string list) (instance1: Expr) (instance2: Expr) (next: Expr) : Expr = 
     let functionExpr = makeFuncionCall fexpr path instance1 instance2    
@@ -82,9 +84,9 @@ open FSharp.Quotations.Evaluator
 
 let generateWalker<'T> (settings: WalkerSettings) : ((obj -> obj -> string list -> unit) -> 'T -> 'T -> unit) =
     let baseType = typeof<'T>
-    let funType = typeof<obj -> obj -> string list -> unit>
+    let funType = typeof<InputFunction>
     let contents = makeWalkerLambdaExpr settings funType baseType []
-    let castExpr : Expr<(obj -> obj -> string list -> unit) -> 'T -> 'T -> unit> = contents |> Expr.Cast
+    let castExpr : Expr<InputFunction -> 'T -> 'T -> unit> = contents |> Expr.Cast
     castExpr.Compile()
 
 let testLambda =
