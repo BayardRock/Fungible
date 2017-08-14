@@ -48,40 +48,47 @@ let genPOCOWalker (ctype: Type) (path: string list) (instance1: Expr) (instance2
     |> List.map (fun (fpath, field) -> genFieldWalker instance1 instance2 field fpath dispatchOnType)
     |> List.reduce (fun e1 e2 ->  sequenceExprs e1 e2) 
 
-let makeFuncionCall (f: obj -> obj -> string list -> unit) (path: string list) (instance1: Expr) (instance2: Expr) =
+let makeFuncionCall (fexpr: Expr) (path: string list) (instance1: Expr) (instance2: Expr) =
     let objExpr1 = Expr.Coerce(instance1, typeof<obj>)
     let objExpr2 = Expr.Coerce(instance2, typeof<obj>)
-    <@@ f %%objExpr1 %%objExpr2 path @@>
+    <@@ (%%fexpr : obj -> obj -> string list -> unit) %%objExpr1 %%objExpr2 path @@>
 
-let callFunAndCont (f: obj -> obj -> string list -> unit) (path: string list) (instance1: Expr) (instance2: Expr) (next: Expr) : Expr = 
-    let functionExpr = makeFuncionCall f path instance1 instance2    
+let callFunAndCont (fexpr: Expr) (path: string list) (instance1: Expr) (instance2: Expr) (next: Expr) : Expr = 
+    let functionExpr = makeFuncionCall fexpr path instance1 instance2    
     sequenceExprs functionExpr next
 
-let rec dispatchOnType (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) (instance1: Expr) (instance2: Expr) : Expr = 
+let rec dispatchOnType (settings: WalkerSettings) (fexpr: Expr) (mtype: Type) (path: string list) (instance1: Expr) (instance2: Expr) : Expr = 
     match mtype with 
     | _ when FSharpType.IsRecord mtype -> 
-                let walker = genRecordWalker mtype path instance1 instance2 (dispatchOnType settings f)
-                callFunAndCont f path instance1 instance2 walker
-    | _ when mtype.IsValueType || mtype = typeof<String> -> makeFuncionCall f path instance1 instance2     
+                let walker = genRecordWalker mtype path instance1 instance2 (dispatchOnType settings fexpr)
+                callFunAndCont fexpr path instance1 instance2 walker
+    | _ when mtype.IsValueType || mtype = typeof<String> -> makeFuncionCall fexpr path instance1 instance2     
     | _ when mtype.IsClass && settings.CompareCSharpProperties -> 
-                let walker = genPOCOWalker mtype path instance1 instance2 (dispatchOnType settings f)
-                callFunAndCont f path instance1 instance2 walker
+                let walker = genPOCOWalker mtype path instance1 instance2 (dispatchOnType settings fexpr)
+                callFunAndCont fexpr path instance1 instance2 walker
     | _ -> failwithf "Unexpected type: %s" (mtype.ToString())
 
-let makeWalkerLambdaExpr (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) (mtype: Type) (path: string list) : Expr =
+let makeWalkerLambdaExpr (settings: WalkerSettings) (ftype:Type) (mtype: Type) (path: string list) : Expr =
+    let argf = Var("f", ftype, false)
+    let useArgF = Expr.Var(argf)
     let arg1 = Var("x", mtype, false)
     let useArg1 = Expr.Var(arg1)
     let arg2 = Var("y", mtype, false)
     let useArg2 = Expr.Var(arg2)
-    let contents = dispatchOnType settings f mtype path useArg1 useArg2
-    Expr.Lambda(arg1, Expr.Lambda(arg2, contents))
+    let contents = dispatchOnType settings useArgF mtype path useArg1 useArg2
+    Expr.Lambda(argf, Expr.Lambda(arg1, Expr.Lambda(arg2, contents)))
 
 open FSharp.Quotations.Evaluator
 
-let generateWalker<'T> (settings: WalkerSettings) (f: obj -> obj -> string list -> unit) : ('T -> 'T -> unit) =
+let generateWalker<'T> (settings: WalkerSettings) : ((obj -> obj -> string list -> unit) -> 'T -> 'T -> unit) =
     let baseType = typeof<'T>
-    let contents = makeWalkerLambdaExpr settings f baseType []
-    let castExpr : Expr<'T -> 'T -> unit> = contents |> Expr.Cast
+    let funType = typeof<obj -> obj -> string list -> unit>
+    let contents = makeWalkerLambdaExpr settings funType baseType []
+    let castExpr : Expr<(obj -> obj -> string list -> unit) -> 'T -> 'T -> unit> = contents |> Expr.Cast
     castExpr.Compile()
 
+let testLambda =
+    let farg = Var("f", typeof<int -> string>, false)
+    let useFarg = Expr.Var(farg)
+    Expr.Lambda(farg, <@@ (%%useFarg) 1 : string @@>)
 
